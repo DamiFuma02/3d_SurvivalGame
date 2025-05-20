@@ -53,3 +53,16 @@
 
 * Create a second Box Collider with "isTrigger=true" per usare OnTrigger per capire se il player è vicino all'oggetto
 * Edit > Project Settings > Phyisics > Query Trigger disabled in order to raycast only the first smaller default Box Collider in the prefab
+
+
+## 5. Inventory System UI
+
+> [GUI Parts Asset Store](https://assetstore.unity.com/packages/2d/gui/icons/gui-parts-159068)
+
+* Inside the UI Canvas add a new UI > Image with the inventory icon
+    *  Create an UI > Image with the slot icon, and duplicate it. Attach the ItemSlot script
+* Create a prefab with the inventory icon and for each prefab assign it DragDrop script
+* Create InventorySystem empty object
+    * Attach InventorySystem SingleTon object
+    * Handle mouse movements when inventory open or closed pressing "E" key
+    * Optional (Not Implemented): handle keyboard movements when inventory open
