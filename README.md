@@ -29,3 +29,21 @@
 * "Paint Trees" icon:
     * Same as details
     * Use "Provides Contact" tag inside Tree Collider to 
+
+
+## Raycast and simple AI
+
+> Install and import the rabbits assets in the current unity project
+
+* Create a UI > Canvas with inside
+    * UI > Image with an icon from the assets
+    * UI > TextMeshPro to show the name of the object looked
+* Create a custom class "InteractableObject.cs" with some properties and add it as a component inside the prefab desired to look at
+* Create a prefab with the rabbit inside the "Prefabs" folder
+    * Add RigidBody and BoxCollider
+    * Inside the animator select the "DemoAnimator" inside Rabbits/Demo/Animator/ folder 
+        * Assign it to the animator component of the rabbit prefab.
+        * Change the conditions of state change inside the animator
+    * Create a script "NPC_Movements.cs" and add it as a component of the prefab
+    * Optional: add also "InteractableObject.cs" to make the rabbit interactable, and then assign a name
+
