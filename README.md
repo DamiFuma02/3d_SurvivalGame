@@ -2,7 +2,7 @@
 
 [YT Playlist 3d Survival Game Tutorial](https://www.youtube.com/playlist?list=PLtLToKUhgzwnk4U2eQYridNnObc2gqWo-)
 
-## 1 Player Movements
+## 1. Player Movements
 
 > Define a Player empty gameObject with two children: player 3d shape (with Character Controller component) and Camera in order to achieve the first person camera POV
 
@@ -14,7 +14,7 @@
 * lockCameraPosition=false: the camera and the player shape are detached, so the rotation is on the camera object and the movements on the player parent. They have different local coordinates. Use only when the player doesn't need a default looking direction.
 
 
-## 2 Terrain Texture 
+## 2. Terrain Texture 
 
 > Install and import the assets specified in the video tutorial in the current unity project.
 
@@ -31,7 +31,7 @@
     * Use "Provides Contact" tag inside Tree Collider to 
 
 
-## Raycast and simple AI
+## 3. Raycast and simple AI
 
 > Install and import the rabbits assets in the current unity project
 
@@ -47,3 +47,9 @@
     * Create a script "NPC_Movements.cs" and add it as a component of the prefab
     * Optional: add also "InteractableObject.cs" to make the rabbit interactable, and then assign a name
 
+## 4. Picking up Items
+
+> Use a prefab to define the items to pick up
+
+* Create a second Box Collider with "isTrigger=true" per usare OnTrigger per capire se il player è vicino all'oggetto
+* Edit > Project Settings > Phyisics > Query Trigger disabled in order to raycast only the first smaller default Box Collider in the prefab
