@@ -88,4 +88,10 @@
     * When pcking up a 3d prefab it must be destroyed and add it to the inventory
         * Destroy the 3d prefab 
         * AddToInventory(itemName): Instantiate a 2d prefab UI icon for the inventory and add it in the first empty slot found by the responsable
+* Inside SelectionManager Singleton class create a field public GameObject selectedObject; to save the current 3d prefab 
+    * Inside the InteractableObject.Update() add the condition SelectionManager.instance.selectedObject == gameObject in order to check if the item is the right one
+    * This prevents the game to pickup multiple oblject very close to each other when the trigger boxcollider overlaps between different gameObjects
+
+
+
         

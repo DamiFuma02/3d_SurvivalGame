@@ -9,17 +9,7 @@ public class SelectionManager : MonoBehaviour
 {
 
     public static SelectionManager instance { get; set; }
-
-    // method to make SelectionManager a Singleton
-    private void Awake() {
-        if (instance != null && instance != this) {
-            Destroy(gameObject);
-        } else {
-            instance = this;
-        }
-    }
-
-
+    public GameObject selectedObject;
 
     InteractableObject interactableObject;
     public GameObject interaction_Info_UI;
@@ -29,6 +19,22 @@ public class SelectionManager : MonoBehaviour
     Transform hittenObjectTransform;
 
     public bool lookingAtTarget = false;
+
+    // method to make SelectionManager a Singleton
+    private void Awake() {
+        if (instance != null && instance != this) {
+            Destroy(gameObject);
+        }
+        else {
+            instance = this;
+        }
+    }
+
+
+
+
+
+
 
     private void Start() {
         // get the text component inside the interaction_Info_UI GameObject
@@ -47,6 +53,7 @@ public class SelectionManager : MonoBehaviour
                 if (interactableObject.pickable) {
                     interaction_text.text += "\n(left click to pick up)";
                 }
+                selectedObject = interactableObject.gameObject;
                 interaction_Info_UI.SetActive(true);
             }
             else {
