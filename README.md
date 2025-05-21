@@ -66,3 +66,26 @@
     * Attach InventorySystem SingleTon object
     * Handle mouse movements when inventory open or closed pressing "E" key
     * Optional (Not Implemented): handle keyboard movements when inventory open
+
+
+## 6. Inventory System Summary
+
+[Resource Icons UI Asset](https://assetstore.unity.com/packages/p/resource-icons-101998)
+
+[Low Poly Simple Pack Asset](https://assetstore.unity.com/packages/3d/environments/landscapes/low-poly-simple-nature-pack-162153)
+
+> Pickup an item and add it to the inventory if there is enough space
+
+* For each 3d prefab to pick up assing InteractableObject with pickable=true and a meaningful name 
+* For each pickable object create an UI > Image inside the inventory slot and use as image a sprite from the UI asset imported in the project
+    * Assign DragDrop script for each 2d prefab and save it inside Resources folder with a filename equal to the 3d prefab itemName
+    * Optional (not implemented): use directories to create a simple UI > Image and assign it the image red from the folders
+* Fixed Mouse Movements: Mouse Y (UP DOWN) rotates only the camera not the player
+* Inventory System: create empty gameobject with assigned the script
+    * create a List< GameObject > slotList and populate it reading only the slots with "itemSlot" tag
+    * CheckFull() scanning the list and returning false if at least one slot is empty
+    * FindFirstEmptySlot() scanning the list and returning the first empty slot
+    * When pcking up a 3d prefab it must be destroyed and add it to the inventory
+        * Destroy the 3d prefab 
+        * AddToInventory(itemName): Instantiate a 2d prefab UI icon for the inventory and add it in the first empty slot found by the responsable
+        

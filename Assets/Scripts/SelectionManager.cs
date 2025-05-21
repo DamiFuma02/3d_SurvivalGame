@@ -44,6 +44,9 @@ public class SelectionManager : MonoBehaviour
             if (interactableObject && interactableObject.playerInRange) {
                 lookingAtTarget = true;
                 interaction_text.text = hittenObjectTransform.GetComponent<InteractableObject>().GetItemName();
+                if (interactableObject.pickable) {
+                    interaction_text.text += "\n(left click to pick up)";
+                }
                 interaction_Info_UI.SetActive(true);
             }
             else {

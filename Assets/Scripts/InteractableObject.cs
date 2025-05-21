@@ -5,6 +5,7 @@ using UnityEngine;
 public class InteractableObject : MonoBehaviour {
     public string ItemName;
     public bool playerInRange;
+    public bool pickable = true;
 
     public string GetItemName() {
         return ItemName;
@@ -21,9 +22,13 @@ public class InteractableObject : MonoBehaviour {
 
     private void Update() {
         // pickup an object with left click
-        if (playerInRange && Input.GetKeyDown(KeyCode.F) && SelectionManager.instance.lookingAtTarget ) {
-            Debug.Log("Moved " + gameObject.name + " to the inventory");
-            Destroy(gameObject);
+        if (playerInRange && Input.GetKeyDown(KeyCode.Mouse0) && SelectionManager.instance.lookingAtTarget ) {
+            if (!InventorySystem.Instance.CheckFull()) {
+                InventorySystem.Instance.AddToInventory(ItemName);
+                Destroy(gameObject);
+            } else {
+                Debug.Log("Can't pickup the item because the inventory is full");
+            }
         }
     }
 

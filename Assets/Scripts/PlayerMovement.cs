@@ -13,7 +13,7 @@ public class NewBehaviourScript : MonoBehaviour
     public float gravity = -9.81f;   // downwards acceleration gravity
     public float jumpHeight = 1f;
 
-    bool isGrounded;
+    public bool isGrounded;
 
 
     float x;
