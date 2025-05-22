@@ -71,10 +71,8 @@ public class SelectionManager : MonoBehaviour
                 DefaultPointer.SetActive(!interactableObject.pickable);
                 PickUpPointer.SetActive(interactableObject.pickable);
                 selectedObject = interactableObject.gameObject;
-                interaction_Info_UI.SetActive(true);
             }
             else {
-                interaction_Info_UI.SetActive(false);
                 ObjectInfoUI.SetActive(false);
                 DefaultPointer.SetActive(true);
                 PickUpPointer.SetActive(false);
@@ -83,7 +81,6 @@ public class SelectionManager : MonoBehaviour
 
         }
         else {
-            interaction_Info_UI.SetActive(false);
             ObjectInfoUI.SetActive(false);
             DefaultPointer.SetActive(true);
             PickUpPointer.SetActive(false);

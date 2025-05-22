@@ -13,10 +13,12 @@ public class InventorySystem : MonoBehaviour
     public static InventorySystem Instance { get; set; }
 
     public GameObject inventoryScreenUI;
+    public GameObject playerBarUI;
     
-    public List<GameObject> slotList = new List<GameObject>();  
+
+    public List<GameObject> inventoryUISlotList = new List<GameObject>();  
+    public List<GameObject> playerBarSlotList = new List<GameObject>();  
     public List<InventoryItem> inventoryItems = new List<InventoryItem>();
-    public List<string> itemNamesList = new List<string>();
 
     
     
@@ -44,7 +46,12 @@ public class InventorySystem : MonoBehaviour
     void GetInventorySlots() {
         foreach (Transform slot in inventoryScreenUI.transform) {
             if (slot.CompareTag("invSlot")) {
-                slotList.Add(slot.gameObject);
+                inventoryUISlotList.Add(slot.gameObject);
+            }
+        }
+        foreach (Transform slot in playerBarUI.transform) {
+            if (slot.CompareTag("invSlot")) {
+                playerBarSlotList.Add(slot.gameObject);
             }
         }
     }
@@ -75,7 +82,7 @@ public class InventorySystem : MonoBehaviour
     }
 
     private void UpdateInventoryUI() {
-        foreach (GameObject slot in slotList) { 
+        foreach (GameObject slot in inventoryUISlotList) { 
             if (slot.transform.childCount > 0) {
                 GameObject currItem = slot.transform.GetChild(0).gameObject;
                 string itemName = currItem.name.Substring(0, currItem.name.IndexOf("(")).Trim();
@@ -86,6 +93,7 @@ public class InventorySystem : MonoBehaviour
                 });
             }
         }
+
     }
 
     /// <summary>
@@ -146,15 +154,15 @@ public class InventorySystem : MonoBehaviour
 
     private GameObject FindSlotWithItem(string itemName,bool fromStart=true) {
         if (fromStart) {
-            foreach (GameObject slot in slotList) {
+            foreach (GameObject slot in inventoryUISlotList) {
                 if (slot.transform.childCount > 0 && slot.transform.Find(itemName+"(Clone)") != null) {
                     return slot;
                 }
             }
         } else {
-            for (int i= slotList.Count-1; i>=0; i--) {
-                if (slotList[i].transform.childCount > 0 && slotList[i].transform.Find(itemName + "(Clone)") != null) {
-                    return slotList[i];
+            for (int i= inventoryUISlotList.Count-1; i>=0; i--) {
+                if (inventoryUISlotList[i].transform.childCount > 0 && inventoryUISlotList[i].transform.Find(itemName + "(Clone)") != null) {
+                    return inventoryUISlotList[i];
                 }
             }
         }
@@ -163,7 +171,7 @@ public class InventorySystem : MonoBehaviour
 
 
     private GameObject FindFirstEmptySlot() {
-        foreach (GameObject slot in slotList) {
+        foreach (GameObject slot in inventoryUISlotList) {
             if (slot.transform.childCount == 0) {
                 return slot;
             }

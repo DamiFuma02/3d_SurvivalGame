@@ -11,10 +11,12 @@ namespace Assets.Scripts {
     public class InventoryItem {
         public string name;   //unique name
         public int quantity;
+        public bool isTool;
 
-        public InventoryItem(string name, int quantity=1) {
+        public InventoryItem(string name, int quantity=1, bool isTool=false) {
             this.name = name;
             this.quantity = quantity;
+            this.isTool = isTool;
         }
     }
 }

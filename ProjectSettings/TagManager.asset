@@ -8,6 +8,7 @@ TagManager:
   - categoryButton
   - UI_CategoryCraft
   - CraftItemUI
+  - ToolInvSlot
   layers:
   - Default
   - TransparentFX

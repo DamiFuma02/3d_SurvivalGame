@@ -124,4 +124,25 @@
     * Pickup (hand) pointer
     * Object UI Info with name and logo using the same prefabs for the inventory slots
 
+## 10. Player Bar with Health System
 
+> In the player bar there are 3 slots which refere to the first three slots inside the inventory
+
+* Create a Healthbar canvas with a Slider component
+    * Black Background image
+    * Red image (assign it to Slider.FillRect)
+    * Text with "currentHealth/maxHealth"
+* Create a script PlayerHealthSystem
+    * TakeDamage() every 10 secs with coroutines
+    * UpdateHealthbarUI()
+* InventorySystem: find a way to connect the slots with playerbar slots
+    * Make sure that the inventory is being filled without holes from left to rigth
+        * drag away: drag a item into a empty inventory slot
+        * swap: drag an item into a full cell, swapping these items
+        * drag and drop can swap two different items
+        * cannot drag away from the first 3 slots of the inventory because they are latched with player bar (only swap)
+    * Drag and drop not permitted from inventory slots to playerbar slots
+    * Except for Tools from inventory slots to toolSlot (duplicating the icon)
+* Add isTool property for each InventoryItem 
+    * make it unstackable
+    * make it usable by the player pressing F
