@@ -115,7 +115,13 @@
     * CheckAllRequirements before activating a single Crafting Category UI
     * UpdateInventoryUI after insert or remove
 
+## 9. Custom Pointer
 
+> Create a public GameObject in Selection Manager to access the UIPoiner
 
+* Inside the UIPointer there are
+    * Default (cross) pointer
+    * Pickup (hand) pointer
+    * Object UI Info with name and logo using the same prefabs for the inventory slots
 
 

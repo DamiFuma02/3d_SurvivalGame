@@ -10,10 +10,14 @@ public class SelectionManager : MonoBehaviour
 
     public static SelectionManager instance { get; set; }
     public GameObject selectedObject;
-
     InteractableObject interactableObject;
     public GameObject interaction_Info_UI;
-    TextMeshProUGUI interaction_text;
+    public GameObject UI_Pointer;
+    private GameObject DefaultPointer;
+    private GameObject PickUpPointer;   
+    private GameObject ObjectInfoUI;   
+    private GameObject ObjectLogo;   
+    private GameObject ObjectName;   
     Ray lightRay;
     RaycastHit hittenObj;
     Transform hittenObjectTransform;
@@ -38,7 +42,17 @@ public class SelectionManager : MonoBehaviour
 
     private void Start() {
         // get the text component inside the interaction_Info_UI GameObject
-        interaction_text = interaction_Info_UI.GetComponent<TMPro.TextMeshProUGUI>();
+        DefaultPointer = UI_Pointer.transform.Find("DefaultPointer").gameObject;
+        DefaultPointer.SetActive(true);
+
+        PickUpPointer = UI_Pointer.transform.Find("PickUpPointer").gameObject;
+        PickUpPointer.SetActive(true);
+
+        ObjectInfoUI = UI_Pointer.transform.Find("ObjectInfoUI").gameObject;
+        ObjectInfoUI.SetActive(false);
+
+        ObjectLogo = ObjectInfoUI.transform.Find("ObjectLogo").gameObject;
+        ObjectName = ObjectInfoUI.transform.Find("ObjectName").gameObject;
     }
 
     void Update() {
@@ -49,21 +63,30 @@ public class SelectionManager : MonoBehaviour
             // check if the object hitten is an InteractableObject
             if (interactableObject && interactableObject.playerInRange) {
                 lookingAtTarget = true;
-                interaction_text.text = hittenObjectTransform.GetComponent<InteractableObject>().GetItemName();
-                if (interactableObject.pickable) {
-                    interaction_text.text += "\n(left click to pick up)";
-                }
+                ObjectName.GetComponent<TextMeshProUGUI>().text = hittenObjectTransform.GetComponent<InteractableObject>().GetItemName();
+                GameObject currSprite = Resources.Load<GameObject>(hittenObjectTransform.GetComponent<InteractableObject>().GetItemName());
+                // disable itemproperties in the ui 
+                ObjectLogo.GetComponent<Image>().overrideSprite = currSprite.transform.Find("ItemImage").gameObject.GetComponent<Image>().sprite; 
+                ObjectInfoUI.SetActive(true);
+                DefaultPointer.SetActive(!interactableObject.pickable);
+                PickUpPointer.SetActive(interactableObject.pickable);
                 selectedObject = interactableObject.gameObject;
                 interaction_Info_UI.SetActive(true);
             }
             else {
                 interaction_Info_UI.SetActive(false);
+                ObjectInfoUI.SetActive(false);
+                DefaultPointer.SetActive(true);
+                PickUpPointer.SetActive(false);
                 lookingAtTarget = false;
             }
 
         }
         else {
             interaction_Info_UI.SetActive(false);
+            ObjectInfoUI.SetActive(false);
+            DefaultPointer.SetActive(true);
+            PickUpPointer.SetActive(false);
             lookingAtTarget = false;
         }
     }

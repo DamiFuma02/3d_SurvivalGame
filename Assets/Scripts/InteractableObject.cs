@@ -22,11 +22,12 @@ public class InteractableObject : MonoBehaviour {
 
     private void Update() {
         // pickup an object with left click
-        if (playerInRange && Input.GetKeyDown(KeyCode.Mouse0) && SelectionManager.instance.lookingAtTarget && SelectionManager.instance.selectedObject == gameObject) {
+        if (pickable && playerInRange && Input.GetKeyDown(KeyCode.Mouse0) && SelectionManager.instance.lookingAtTarget && SelectionManager.instance.selectedObject == gameObject) {
             if (!InventorySystem.Instance.CheckFull()) {
                 InventorySystem.Instance.AddToInventory(ItemName);
                 Destroy(gameObject);
-            } else {
+            }
+            else {
                 Debug.Log("Can't pickup the item because the inventory is full");
             }
         }
