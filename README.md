@@ -93,5 +93,29 @@
     * This prevents the game to pickup multiple oblject very close to each other when the trigger boxcollider overlaps between different gameObjects
 
 
+## 7. Crafting System UI
 
-        
+[Wooden GUI](https://assetstore.unity.com/packages/2d/gui/fantasy-wooden-gui-free-103811)
+
+> Create the UI for the crafting system
+
+* Create CraftingMenu with different buttons for each category with on click event listener that opens the rigth category crafter panel using an index
+* Create empty gameobject craftingcategoryUI
+    * inside create as many object categoryslot as many available categories
+    * inside each category crafter add at least one object ui crafter with a recipe and a craft button
+* Created boolean method InventorySystem.CheckQuantity(itemName, itemQty) to check if the recipe requirement is respected
+
+## 8. Crafting System Script
+* Edit inventory creating a class InventoryItem 
+* Edit inventory slot UI prefabs adding 
+    * ItemProperties text (quantity)
+    * ItemImage 
+* Get Crafting Menu UI and components
+* Get Crafting Categories UI components
+    * CheckAllRequirements before activating a single Crafting Category UI
+    * UpdateInventoryUI after insert or remove
+
+
+
+
+

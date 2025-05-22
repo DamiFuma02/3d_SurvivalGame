@@ -11,6 +11,7 @@ Assets/TextMesh Pro/
 Assets/GUI_Parts/
 Assets/SimpleNaturePack/
 Assets/UI/
+Assets/Fantasy Wooden GUI Free/
 Library/
 Packages/
 Temp/
@@ -375,3 +376,4 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/Assets/Fantasy Wooden GUI  Free

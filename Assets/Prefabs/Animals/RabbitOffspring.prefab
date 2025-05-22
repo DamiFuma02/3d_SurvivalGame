@@ -937,6 +937,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ItemName: Small Rabbit
+  playerInRange: 0
+  pickable: 0
 --- !u!1 &5943011458336935915
 GameObject:
   m_ObjectHideFlags: 0
