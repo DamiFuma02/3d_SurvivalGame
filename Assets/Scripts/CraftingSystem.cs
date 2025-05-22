@@ -49,15 +49,12 @@ public class CraftingSystem : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        GetInventoryItems();
         GetCategoriesCraftingUIScreens();
         GetCategoryButtonsFromMenu();
         
     }
 
-    private void GetInventoryItems() {
-        inventoryItemList = InventorySystem.Instance.itemNamesList;
-    }
+    
 
     
 
@@ -161,7 +158,6 @@ public class CraftingSystem : MonoBehaviour
     /// </summary>
     /// <param name="categoryIndex"></param>
     private void CategoryCheckAllCraftingRecipes(int categoryIndex) {
-        GetInventoryItems();  // update inventory items
         List<Button> objsCraftButtons = craftObjectButtons[categoryIndex];
         List<TextMeshProUGUI> categoryRecipes = objectsCraftRecipes[categoryIndex];
         for (int i = 0; i < categoryRecipes.Count; i++) {
