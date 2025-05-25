@@ -34,7 +34,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 51, y: 31}
+  m_AnchoredPosition: {x: 51, y: -46.2}
   m_SizeDelta: {x: 45.4206, y: 30.7367}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3725180334273278005
@@ -201,7 +201,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 32fb7e0aee1614fe8ac38467a139e9a6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: e0eac6b76fdd842e88a7f8c75ecffaf4, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -222,8 +222,9 @@ GameObject:
   - component: {fileID: 7295837686687141249}
   - component: {fileID: 1595137948541154847}
   - component: {fileID: 2522814806075264599}
+  - component: {fileID: 636864868065814074}
   m_Layer: 5
-  m_Name: hammer
+  m_Name: Tree
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -274,3 +275,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9a3ca10db02f724cbbb774059547dca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &636864868065814074
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8133047331459935316}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af30f995d1e48fd4cb172a7d629389d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemName: Tree
+  quantity: 1
+  maxQuantityPerStack: 1
+  category: 0

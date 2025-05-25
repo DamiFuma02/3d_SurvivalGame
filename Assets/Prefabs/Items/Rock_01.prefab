@@ -124,6 +124,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ItemName: stone
   playerInRange: 0
+  pickable: 1
 --- !u!65 &-4516113107225220730
 BoxCollider:
   m_ObjectHideFlags: 0

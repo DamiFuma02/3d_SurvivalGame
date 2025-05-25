@@ -126,6 +126,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ItemName: Tree
   playerInRange: 0
+  pickable: 1
 --- !u!65 &2884814291516854757
 BoxCollider:
   m_ObjectHideFlags: 0

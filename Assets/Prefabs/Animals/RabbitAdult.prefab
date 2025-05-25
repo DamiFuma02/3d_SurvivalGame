@@ -813,6 +813,7 @@ GameObject:
   - component: {fileID: 308412682057950350}
   - component: {fileID: 7052485308961915228}
   - component: {fileID: 6629437386154964804}
+  - component: {fileID: 5243491783357451580}
   m_Layer: 0
   m_Name: RabbitAdult
   m_TagString: Untagged
@@ -937,8 +938,31 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ItemName: Big Rabbit
+  itemCategory: 1
   playerInRange: 0
   pickable: 0
+  health: 3
+--- !u!65 &5243491783357451580
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5702656463502173158}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 5, y: 5, z: 5}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &5943011458336935915
 GameObject:
   m_ObjectHideFlags: 0
