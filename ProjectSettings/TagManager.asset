@@ -4,11 +4,13 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - invSlot
   - categoryButton
   - UI_CategoryCraft
   - CraftItemUI
   - ToolInvSlot
+  - DynamicBar
+  - playerBarInvSlot
+  - invSlot
   layers:
   - Default
   - TransparentFX
