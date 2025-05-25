@@ -63,6 +63,7 @@
   <ItemGroup>
     <Compile Include="Assets\NoobGameDev\Health System For Dummies\System\Editor\HealthSystemEditor.cs" />
     <Compile Include="Assets\NoobGameDev\Health System For Dummies\Example Scene Scripts\Editor\ReadmeEditor.cs" />
+    <Compile Include="Assets\Editor\DictionaryDrawer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

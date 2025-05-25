@@ -289,5 +289,34 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: hammer
   quantity: 1
-  maxQuantityPerStack: 1
+  maxQuantityPerStack: 16
   category: 3
+  categoryProperties:
+    _Buckets: ffffffffffffffffffffffff
+    _HashCodes: ffffffff0000000000000000
+    _Next: ffffffff0000000000000000
+    _Count: 1
+    _Version: 18
+    _FreeList: 0
+    _FreeCount: 1
+    _Keys:
+    - 
+    - 
+    - 
+    _Values:
+    - 
+    - 
+    - 
+  craftingRecipe:
+    _Buckets: ffffffff01000000ffffffff
+    _HashCodes: 37ef13604efd144600000000
+    _Next: ffffffff0000000000000000
+    _Count: 2
+    _Version: 22
+    _FreeList: -1
+    _FreeCount: 0
+    _Keys:
+    - stone
+    - Tree
+    - 
+    _Values: 030000000200000000000000

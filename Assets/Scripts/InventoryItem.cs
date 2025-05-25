@@ -8,33 +8,12 @@ using UnityEngine.EventSystems;
 using System.Text.Json;
 
 
+[Serializable] public class CategoryPropertiesDictionary: SerializableDictionary<string, string> { }
+[Serializable] public class CraftingRecipeDictionary: SerializableDictionary<string, int> { }
+
 public enum ItemCategory {
     CraftingItem, Consumable, Armor, Tool, Weapon
 }
-
-[Serializable]
-public class FoodItemProperties {
-
-    private int HealthRestored;
-    private int HungerRestored;
-    private int WaterRestored;
-
-    public FoodItemProperties() {
-        HealthRestored = 0;
-        HungerRestored = 0;
-        WaterRestored = 0;
-    }
-
-
-
-}
-
-[Serializable]
-public class ToolItemProperties {
-    private string BreakableMaterial;
-    private int Durability;
-}
-
 
 
 public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler {
@@ -42,15 +21,16 @@ public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     public int quantity;
     public int maxQuantityPerStack;
     public ItemCategory category;
-    public Dictionary<string, object> categoryProperties = new Dictionary<string, object>();
-    public Dictionary<string, int> craftingRecipe = new Dictionary<string, int>();
+    // key: property name, value: property value (can be any type)
+    public CategoryPropertiesDictionary categoryProperties = new CategoryPropertiesDictionary();
+    // key: item name, value: item quantity required for crafting
+    public CraftingRecipeDictionary craftingRecipe = new CraftingRecipeDictionary(); 
 
 
     GameObject hoveredItemInfoUI;
     TextMeshProUGUI hoveredItemName;
     TextMeshProUGUI hoveredItemCategory;
     TextMeshProUGUI hoveredItemCategoryProperties;
-    private ItemCategory itemCategory;
 
 
     public InventoryItem(string name,ItemCategory itemCategory=ItemCategory.CraftingItem,int itemQuantity=1) {
@@ -62,8 +42,8 @@ public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
             maxQuantityPerStack = 1;
         }
         category = itemCategory;
-        categoryProperties = new Dictionary<string, object>();
-        craftingRecipe = new Dictionary<string, int>();
+        categoryProperties = new CategoryPropertiesDictionary();
+        craftingRecipe = new CraftingRecipeDictionary();
     }
 
 
