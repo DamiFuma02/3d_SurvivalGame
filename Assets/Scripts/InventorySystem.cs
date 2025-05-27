@@ -137,11 +137,14 @@ public class InventorySystem : MonoBehaviour
 
     private void SelectItemInPlayerBar(int v) {
         for (int i = 0; i < playerBarSize; i++) {
-            playerBarSlotsArray[i].transform.Find("hotKey").GetComponent<TextMeshProUGUI>().color = Color.white;
             // other than the hotKey child, check if thereis another child, the 2d prefab of an item in the inventory
-            if (i == v && playerBarSlotsArray[i].transform.childCount>1) {
-                playerBarSlotsArray[i].transform.Find("hotKey").GetComponent<TextMeshProUGUI>().color = Color.black;
+            Color currColor = Color.white;
+            Color prevColor;
+            if (i == v && playerBarSlotsArray[i].transform.childCount > 1) {
+                prevColor = playerBarSlotsArray[i].transform.Find("hotKey").GetComponent<TextMeshProUGUI>().color;
+                currColor = prevColor == Color.black ? Color.white : Color.black;
             }
+            playerBarSlotsArray[i].transform.Find("hotKey").GetComponent<TextMeshProUGUI>().color = currColor;
         }
     }
 
