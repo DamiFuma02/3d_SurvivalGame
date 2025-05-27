@@ -62,24 +62,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextEventHandler.cs" />
-    <Compile Include="Assets\NoobGameDev\Health System For Dummies\System\Bar\FollowCameraRotation.cs" />
     <Compile Include="Assets\Scripts\NPC_Movements.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\EnvMapAnimator.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextSelector_A.cs" />
-    <Compile Include="Assets\NoobGameDev\Health System For Dummies\Example Scene Scripts\Readme.cs" />
-    <Compile Include="Assets\NoobGameDev\Health System For Dummies\Example Scene Scripts\HideUIObjectWhenToggleOff.cs" />
-    <Compile Include="Assets\NoobGameDev\Health System For Dummies\System\UnityEvents\OnMaximumHealthChanged\OnMaximumHealthChanged.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark02.cs" />
-    <Compile Include="Assets\NoobGameDev\Health System For Dummies\Example Scene Scripts\SmoothingToggle.cs" />
-    <Compile Include="Assets\NoobGameDev\Health System For Dummies\System\UnityEvents\OnCurrentHealthChanged\OnCurrentHealthChanged.cs" />
-    <Compile Include="Assets\NoobGameDev\Health System For Dummies\System\Bar\HealthBar.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_ExampleScript_01.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMPro_InstructionOverlay.cs" />
-    <Compile Include="Assets\NoobGameDev\Health System For Dummies\System\UnityEvents\OnCurrentHealthChanged\CurrentHealth.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexShakeB.cs" />
-    <Compile Include="Assets\NoobGameDev\Health System For Dummies\Example Scene Scripts\CharacterAnimation.cs" />
     <Compile Include="Assets\Scripts\MouseMovements.cs" />
-    <Compile Include="Assets\NoobGameDev\Health System For Dummies\Example Scene Scripts\AnimationSlider.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexJitter.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_UiFrameRateCounter.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexZoom.cs" />
@@ -101,7 +91,6 @@
     <Compile Include="Assets\Scripts\InteractableObject.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark01.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TextMeshSpawner.cs" />
-    <Compile Include="Assets\NoobGameDev\Health System For Dummies\System\NoobGameDevUtilities\PrefabUtilities.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\CameraController.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark03.cs" />
     <Compile Include="Assets\Scripts\ItemSlot.cs" />
@@ -113,18 +102,13 @@
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexColorCycler.cs" />
     <Compile Include="Assets\Scripts\SerializableDictionary.cs" />
     <Compile Include="Assets\Scripts\InventoryItem.cs" />
-    <Compile Include="Assets\NoobGameDev\Health System For Dummies\System\UnityEvents\OnIsAliveChangedEvent.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\ObjectSpin.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_PhoneNumberValidator.cs" />
-    <Compile Include="Assets\NoobGameDev\Health System For Dummies\Example Scene Scripts\SliderValueToText.cs" />
-    <Compile Include="Assets\NoobGameDev\Health System For Dummies\System\NoobGameDevUtilities\Utilities.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TextConsoleSimulator.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TeleType.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextEventCheck.cs" />
-    <Compile Include="Assets\NoobGameDev\Health System For Dummies\System\UnityEvents\OnMaximumHealthChanged\MaximumHealth.cs" />
     <Compile Include="Assets\Scripts\PlayerDynamicBarsSystem.cs" />
     <Compile Include="Assets\Scripts\DragDrop.cs" />
-    <Compile Include="Assets\NoobGameDev\Health System For Dummies\System\HealthSystemForDummies.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TextMeshProFloatingText.cs" />
   </ItemGroup>
   <ItemGroup>

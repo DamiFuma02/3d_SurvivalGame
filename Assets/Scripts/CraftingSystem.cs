@@ -29,7 +29,9 @@ public class CraftingSystem : MonoBehaviour
     public GameObject[] craftCategoryScreensArray;
     // inside each single category crafting UI screen there are
     // multiple craftable objects with a single UI (button and recipe) for each object
-    
+
+    public int gridSize = 3; // 3 x 3 grid
+    public float spacing = 2f;
 
 
 
@@ -48,13 +50,13 @@ public class CraftingSystem : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        GetAllAvailableInventoryItems();
+        GetAllAvailableCraftableInventoryItems();
         ConfigAllCategoriesCraftingUIScreen();
         ConfigCategoryButtonsFromMenu();
         
     }
 
-    private void GetAllAvailableInventoryItems() {
+    private void GetAllAvailableCraftableInventoryItems() {
         GameObject[] invIconsGameObjects = Resources.LoadAll<GameObject>("InventorySystemPrefabs");
         InventoryItem curr;
         foreach (GameObject item in invIconsGameObjects) {
@@ -69,13 +71,15 @@ public class CraftingSystem : MonoBehaviour
         }
     }
 
+    
     private void ConfigAllCategoriesCraftingUIScreen() {
         int categoryCount = Enum.GetValues(typeof(ItemCategory)).Length;
         craftCategoryScreensArray = new GameObject[categoryCount];
         // get the first default crafting category screen UI 
         // create all the others category crafting screens UI
+        GameObject currCategoryCraftingUI;
         for (int i = 0; i < categoryCount; i++) {
-            GameObject currCategoryCraftingUI = Instantiate(Resources.Load<GameObject>("CraftingSystemPrefabs/craftCategoryUi"), craftCategoriesScreenUIParent.transform);
+            currCategoryCraftingUI  = Instantiate(Resources.Load<GameObject>("CraftingSystemPrefabs/craftCategoryUi"), craftCategoriesScreenUIParent.transform);
             currCategoryCraftingUI.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "Craft " + ((ItemCategory)i).ToString();
             AddItemsScreenUIsByCategory(currCategoryCraftingUI,(ItemCategory)i);
             currCategoryCraftingUI.transform.SetParent(craftCategoriesScreenUIParent.transform);
@@ -84,6 +88,11 @@ public class CraftingSystem : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Configures the crafting object UI for the current category in a maximum grid 3 x 3 layout, 
+    /// each screen containing the items that can be crafted in that category.
+    /// If the category count > 9 add a button to go to the text pagee
+    /// </summary>
     private void AddItemsScreenUIsByCategory(GameObject craftingCategoryUI, ItemCategory currCategory) {
         GameObject craftItemUIPrefab = Resources.Load<GameObject>("CraftingSystemPrefabs/craftItemUI");
         // iterate through all the items in the current category
@@ -91,16 +100,40 @@ public class CraftingSystem : MonoBehaviour
         if (!availableCraftableInventoryItemsByCategory.ContainsKey(currCategory)) {
             return;
         }
-        foreach (InventoryItem item in availableCraftableInventoryItemsByCategory[currCategory]) {
+        int[] xPositionOffset = { -220, 0, 220 };
+        int[] yPositionOffset = { 270, 0, -270 };
+        int row, col;
+        for (int i = 0; i < availableCraftableInventoryItemsByCategory[currCategory].Count; i++) {
+            InventoryItem item = availableCraftableInventoryItemsByCategory[currCategory][i];
+            row = i / gridSize;
+            col = i % gridSize;
             // create a new CraftItemUI for each item in the current category
-            GameObject currCraftItemUI = Instantiate(craftItemUIPrefab, craftingCategoryUI.transform.position,craftingCategoryUI.transform.rotation);
+            GameObject currCraftItemUI = Instantiate(craftItemUIPrefab, craftingCategoryUI.transform.position, craftingCategoryUI.transform.rotation);
+            // translate the current object based on the offset row(Y) and columns(X)
+            currCraftItemUI.transform.Translate(new Vector3(xPositionOffset[col], yPositionOffset[row],0), Space.Self);
             currCraftItemUI.transform.Find("ItemName").GetComponent<TextMeshProUGUI>().text = item.itemName;
             currCraftItemUI.transform.Find("ItemImage").GetComponent<Image>().overrideSprite = Resources.Load<GameObject>("InventorySystemPrefabs/"+item.itemName).transform.Find("ItemImage").GetComponent<Image>().sprite;
             currCraftItemUI.transform.Find("CraftingRecipeText").GetComponent<TextMeshProUGUI>().text = CategoryPropertiesToString(item.craftingRecipe);
-            currCraftItemUI.SetActive(true); // set the UI as inactive by default
+            InventoryItem currItem = item; // capture the current item
+            currCraftItemUI.transform.Find("CraftItemButton").GetComponent<Button>().onClick.AddListener(() => CraftObject(currItem));
+            currCraftItemUI.SetActive(true); // set the UI as active 
             // add the current CraftItemUI as a child of the current crafting category UI
             currCraftItemUI.transform.SetParent(craftingCategoryUI.transform);
         }
+    }
+
+    /// <summary>
+    /// On click event listener for the CraftItemButton in the CraftItemUI
+    /// called after checking all the requirements for the item to be crafted
+    /// </summary>
+    /// <param name="itemToCraft"></param>
+    private void CraftObject(InventoryItem itemToCraft) {
+        foreach (var keyValue in itemToCraft.craftingRecipe) {
+            InventorySystem.Instance.RemoveFromInventory(keyValue.Key, keyValue.Value);
+        }
+        // add the crafted item to the inventory
+        InventorySystem.Instance.AddToInventory(itemToCraft.itemName);
+        CheckAllCraftingRecipesInCategory((int)itemToCraft.category);
     }
 
     private string CategoryPropertiesToString(CraftingRecipeDictionary craftingRecipe) {
@@ -115,25 +148,7 @@ public class CraftingSystem : MonoBehaviour
     }
 
 
-    /// <summary>
-    /// On Click event listener for each object craft 
-    /// </summary>
-    /// <param name="objUISlot">The current UI slot inside a single category crafting UI</param>
-    private void CraftObject(Image objUISlot, int categoryIndex) {
-        // remove all the objects from the crafting requirements of the current object
-        string[] craftingRecipeRequirements = objUISlot.transform.Find("CraftingRecipeText").GetComponent<TextMeshProUGUI>().text.Split('\n');
-        foreach (string req in craftingRecipeRequirements) {
-            // req= "itemName [itemQty]"
-            string itemName = req.Substring(0, req.IndexOf("[")).Trim(); // Extract item name
-            int itemQty = int.Parse(req.Substring(req.IndexOf("[") + 1, req.IndexOf("]") - req.IndexOf("[") - 1)); // Extract item quantity
-            InventorySystem.Instance.RemoveFromInventory(itemName, itemQty);
-        }
-        Debug.Log("Items removed from the inventory");
-        // add the current object to the inventory
-        InventorySystem.Instance.AddToInventory(objUISlot.transform.Find("ItemName").GetComponent<TextMeshProUGUI>().text);
-        // check again all the requirements for each object in the current category UI
-        CheckAllCraftingRecipesInCategory(categoryIndex);
-    }
+    
 
 
     /// <summary>
@@ -142,13 +157,25 @@ public class CraftingSystem : MonoBehaviour
     private void ConfigCategoryButtonsFromMenu() {
         // instantiate one button for each category as child of craftingMenuUI
         int categoryCount = Enum.GetValues(typeof(ItemCategory)).Length;
-        for (int i = 0; i < categoryCount; i++) {
-            GameObject currCategoryButton = Instantiate(Resources.Load<GameObject>("CraftingSystemPrefabs/openCategoryCraftingMenu"), craftingMenuUI.transform);
-            Button button = currCategoryButton.GetComponent<Button>();
-            currCategoryButton.GetComponentInChildren<TextMeshProUGUI>().text = ((ItemCategory)i).ToString();
-            int categoryIdx = i; // capture the current index
-            button.onClick.AddListener(() => OpenCategoryCraftingUI(categoryIdx));
-            currCategoryButton.gameObject.SetActive(availableCraftableInventoryItemsByCategory.ContainsKey((ItemCategory)i));
+        int[] xPositionOffset = { -180, 0, 180 };
+        int[] yPositionOffset = { 220, 0, -220 };
+        int row, col;
+        // counts the category that have minimum 1 craftable item in the current category 
+        int validCategoryCount = 0;
+        foreach (ItemCategory category in Enum.GetValues(typeof(ItemCategory))) {   
+            if (availableCraftableInventoryItemsByCategory.ContainsKey(category)) {
+                row = validCategoryCount / gridSize;
+                col = validCategoryCount % gridSize;
+                GameObject currCategoryButton = Instantiate(Resources.Load<GameObject>("CraftingSystemPrefabs/openCategoryCraftingMenu"), craftingMenuUI.transform);
+                currCategoryButton.transform.Translate(new Vector3(xPositionOffset[col], yPositionOffset[row], 0), Space.Self);
+                currCategoryButton.GetComponentInChildren<TextMeshProUGUI>().text = category.ToString();
+                Button button = currCategoryButton.GetComponent<Button>();
+                int categoryIdx = (int)category; // capture the current index
+                button.onClick.AddListener(() => OpenCategoryCraftingUI(categoryIdx));
+                currCategoryButton.gameObject.SetActive(true);
+                validCategoryCount++;
+            }
+            
         }
     }
 

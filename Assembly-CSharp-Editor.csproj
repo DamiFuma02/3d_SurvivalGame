@@ -61,8 +61,6 @@
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\2023.2.20f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.UIToolkit.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\NoobGameDev\Health System For Dummies\System\Editor\HealthSystemEditor.cs" />
-    <Compile Include="Assets\NoobGameDev\Health System For Dummies\Example Scene Scripts\Editor\ReadmeEditor.cs" />
     <Compile Include="Assets\Editor\DictionaryDrawer.cs" />
   </ItemGroup>
   <ItemGroup>
