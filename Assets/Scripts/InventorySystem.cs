@@ -6,13 +6,19 @@ using UnityEngine.Assertions;
 using System.Linq;
 using TMPro;
 using static UnityEditor.Progress;
+using Unity.VisualScripting;
 
 
 public class InventorySystem : MonoBehaviour
 {
     public static InventorySystem Instance { get; set; }
 
-    
+    public int inventorySize = 20; // total number of slots in the inventory
+    public List<int> inventoryRowsColsLimits = new List<int>() { 400, 200 };
+
+    public int playerBarSize = 5; // total number of slots in the inventory
+    public int playerBarXOffset = 320;
+    int row, col;
 
     public GameObject inventoryScreenUI;
     public GameObject playerBarUI;
@@ -44,38 +50,99 @@ public class InventorySystem : MonoBehaviour
 
 
     void Start() {
+        Debug.Assert(playerBarSize < inventorySize, "The number of slots in the playerBar must be less then the number in the inventory screen");
+        Assert.IsFalse(IsPrime(inventorySize),"The number of items inside the inventory cannot be a prime value");
+        Assert.IsTrue(playerBarSize<=9,"Not enough hotkeys to assing to each slot in the player bar. Maximum=9");
         isOpen = false;
-        GetInventorySlots();
+        Cursor.visible = false;
+        ConfigInventorySlots(GetGridSize(inventorySize));
     }
 
-    
-
-    void GetInventorySlots() {
-        List<GameObject> inventoryScreenSlots = new List<GameObject>();
-        List<GameObject> playerBarSlots = new List<GameObject>();
-        GameObject currObj;
-        for (int i = 0; i < inventoryScreenUI.transform.childCount-1; i++) {
-            currObj = inventoryScreenUI.transform.GetChild(i).gameObject;
-            if (currObj.CompareTag("invSlot")) {
-                inventoryScreenSlots.Add(currObj);
+    private int[] GetGridSize(int inventoryDimension) {
+        int[] sizes = new int[2];
+        for (int i = (int)Math.Sqrt(inventoryDimension); i >= 2; i--) // Only check up to sqrt(num)
+        {
+            if (inventoryDimension % i == 0) // Check if i is a factor
+            {
+                int pair = inventoryDimension / i;
+                if (pair<i) {
+                    sizes[0] = i; // rows
+                    sizes[1] = pair; // cols
+                } else {
+                    sizes[0] = pair;
+                    sizes[1] = i;
+                }
+                break;
             }
         }
+        return sizes;
+    }
 
-        for (int i = 0; i < playerBarUI.transform.childCount; i++) {
-            currObj = playerBarUI.transform.GetChild(i).gameObject;
-            if (currObj.CompareTag("playerBarInvSlot")) {
-                playerBarSlots.Add(currObj);
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="gridSizes">rows x cols</param>
+    void ConfigInventorySlots(int[] gridSizes) {
+        int nRows = gridSizes[0];
+        int nCols = gridSizes[1];
+        Debug.Assert(nRows >= nCols, "The number of rows must be >= the number of columns");
+        int[] xOffsets = Enumerable.Range(0, nRows).Select(i => -inventoryRowsColsLimits[0] + i * (2 * inventoryRowsColsLimits[0]) / (nRows - 1)).ToArray();
+        int[] yOffsets = Enumerable.Range(0, nCols).Select(i => -inventoryRowsColsLimits[1] + i * (2 * inventoryRowsColsLimits[1]) / (nCols - 1)).ToArray();
+        GameObject currInvSlot;
+        List<GameObject> inventoryScreenSlots = new List<GameObject>();
+        for (int j = nCols - 1; j >= 0; j--) {
+            for (int i = 0; i < nRows; i++) {
+                currInvSlot = Instantiate(Resources.Load<GameObject>("InventorySystemPrefabs/invSlot"),
+                    inventoryScreenUI.transform
+                );
+                currInvSlot.transform.Translate(new Vector3(xOffsets[i], yOffsets[j], 0), Space.Self);
+                currInvSlot.gameObject.SetActive(true);
+                inventoryScreenSlots.Add(currInvSlot);
             }
+        }
+        int[] playerBarXOffsets = Enumerable.Range(0, playerBarSize).Select(i => -playerBarXOffset + i * (2 * playerBarXOffset) / (playerBarSize - 1)).ToArray();
+        List<GameObject> playerBarSlots = new List<GameObject>();
+        GameObject currPlayerBarInvSlot;
+        for (int i = 0; i < playerBarSize; i++) {
+            currPlayerBarInvSlot = Instantiate(Resources.Load<GameObject>("InventorySystemPrefabs/playerBarInvSlot"),
+                    playerBarUI.transform
+                );
+            currPlayerBarInvSlot.transform.Translate(new Vector3(playerBarXOffsets[i], 0, 0), Space.Self);
+            currPlayerBarInvSlot.gameObject.SetActive(true);
+            currPlayerBarInvSlot.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = (i + 1).ToString();
+            playerBarSlots.Add(currPlayerBarInvSlot);
         }
         inventorySlotsArray = inventoryScreenSlots.ToArray();
         playerBarSlotsArray = playerBarSlots.ToArray();
         Assert.IsTrue(playerBarSlotsArray.Length <= inventorySlotsArray.Length);
+        Assert.AreEqual(inventorySlotsArray.Length, inventorySize);
         inventoryItems = new InventoryItem[inventorySlotsArray.Length];
     }
 
 
     void Update() {
         ToggleInventory();
+        CheckPlayerBarHotKeyPress();
+        
+    }
+
+    private void CheckPlayerBarHotKeyPress() {
+        int startNumber = (int)KeyCode.Alpha0;  
+        for (int i = (int)KeyCode.Alpha0; i <= (int)KeyCode.Alpha9; i++) {
+            if (Input.GetKeyDown((KeyCode)i)) {
+                SelectItemInPlayerBar(i-startNumber-1);
+            }
+        }
+    }
+
+    private void SelectItemInPlayerBar(int v) {
+        for (int i = 0; i < playerBarSize; i++) {
+            playerBarSlotsArray[i].transform.Find("hotKey").GetComponent<TextMeshProUGUI>().color = Color.white;
+            // other than the hotKey child, check if thereis another child, the 2d prefab of an item in the inventory
+            if (i == v && playerBarSlotsArray[i].transform.childCount>1) {
+                playerBarSlotsArray[i].transform.Find("hotKey").GetComponent<TextMeshProUGUI>().color = Color.black;
+            }
+        }
     }
 
     void ToggleInventory() {
@@ -85,6 +152,8 @@ public class InventorySystem : MonoBehaviour
             inventoryScreenUI.SetActive(true);
             playerBarUI.SetActive(false);
             Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+
             isOpen = true;
             CraftingSystem.instance.craftingMenuUI.SetActive(true);
         }
@@ -98,6 +167,8 @@ public class InventorySystem : MonoBehaviour
                 screen.SetActive(false);
             }
             Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+
             isOpen = false;
         }
     }
@@ -113,9 +184,9 @@ public class InventorySystem : MonoBehaviour
         }
         for (int i = 0; i < playerBarSlotsArray.Length; i++) {
             if (inventorySlotsArray[i].transform.childCount > 0) {
-                if (playerBarSlotsArray[i].transform.childCount > 0) {
-                    playerBarSlotsArray[i].transform.GetChild(0).GetComponent<InventoryItem>().quantity = inventorySlotsArray[i].transform.GetChild(0).GetComponent<InventoryItem>().quantity;
-                    playerBarSlotsArray[i].transform.GetChild(0).Find("ItemProperties").GetComponent<TextMeshProUGUI>().text = inventorySlotsArray[i].transform.GetChild(0).Find("ItemProperties").GetComponent<TextMeshProUGUI>().text;
+                if (playerBarSlotsArray[i].transform.childCount > 1) {
+                    playerBarSlotsArray[i].transform.GetChild(1).GetComponent<InventoryItem>().quantity = inventorySlotsArray[i].transform.GetChild(0).GetComponent<InventoryItem>().quantity;
+                    playerBarSlotsArray[i].transform.GetChild(1).Find("ItemProperties").GetComponent<TextMeshProUGUI>().text = inventorySlotsArray[i].transform.GetChild(0).Find("ItemProperties").GetComponent<TextMeshProUGUI>().text;
                 } else { 
                     Instantiate(inventorySlotsArray[i].transform.GetChild(0).gameObject,
                         playerBarSlotsArray[i].transform.position,
@@ -124,9 +195,8 @@ public class InventorySystem : MonoBehaviour
                 }
                 // if the inventory slot is empty but the player bar no
                 // it means that item has been removed from the inventory
-            } else if (playerBarSlotsArray[i].transform.childCount > 0) {
-                Destroy(playerBarSlotsArray[i].transform.GetChild(0).gameObject);
-                playerBarSlotsArray[i].transform.DetachChildren();
+            } else if (playerBarSlotsArray[i].transform.childCount > 1) {
+                DestroyImmediate(playerBarSlotsArray[i].transform.GetChild(1).gameObject);
             }
         }
 
@@ -246,14 +316,6 @@ public class InventorySystem : MonoBehaviour
     }
 
 
-    private GameObject FindFirstEmptySlot() {
-        foreach (GameObject slot in inventorySlotsArray) {
-            if (slot.transform.childCount == 0) {
-                return slot;
-            }
-        }
-        return null;
-    }
 
     public bool CheckFull() {
         foreach (var item in inventoryItems) {
@@ -274,5 +336,20 @@ public class InventorySystem : MonoBehaviour
         return currQty >= quantity;
     }
 
-    
+
+    bool IsPrime(int number) {
+        if (number <= 1) return false;
+        if (number == 2) return true; // 2 is the smallest prime
+        if (number % 2 == 0) return false; // Even numbers other than 2 are not prime
+
+        for (int i = 3; i <= Math.Sqrt(number); i += 2) // Check only odd numbers up to sqrt(number)
+        {
+            if (number % i == 0) return false;
+        }
+
+        return true;
+    }
+
+
+
 }

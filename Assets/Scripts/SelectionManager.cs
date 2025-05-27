@@ -61,7 +61,7 @@ public class SelectionManager : MonoBehaviour
             hittenObjectTransform = hittenObj.transform;
             interactableObject = hittenObjectTransform.GetComponent<InteractableObject>();
             // check if the object hitten is an InteractableObject
-            if (interactableObject && interactableObject.playerInRange) {
+            if (interactableObject && interactableObject.playerInRange && !InventorySystem.Instance.isOpen) {
                 lookingAtTarget = true;
                 ObjectName.GetComponent<TextMeshProUGUI>().text = hittenObjectTransform.GetComponent<InteractableObject>().GetItemName();
                 GameObject currSprite = Resources.Load<GameObject>("InventorySystemPrefabs/" + hittenObjectTransform.GetComponent<InteractableObject>().GetItemName());

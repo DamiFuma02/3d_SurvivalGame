@@ -25,7 +25,7 @@ public class InteractableObject : MonoBehaviour {
 
     private void Update() {
         // pickup an object with left click
-        if (playerInRange && Input.GetKeyDown(KeyCode.Mouse0) && SelectionManager.instance.lookingAtTarget && SelectionManager.instance.selectedObject == gameObject) {
+        if (!InventorySystem.Instance.isOpen && playerInRange && Input.GetKeyDown(KeyCode.Mouse0) && SelectionManager.instance.lookingAtTarget && SelectionManager.instance.selectedObject == gameObject) {
             if (pickable) {
                 if (!InventorySystem.Instance.CheckFull()) {
                     InventorySystem.Instance.AddToInventory(ItemName, itemCategory);
