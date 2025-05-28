@@ -201,7 +201,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: e0eac6b76fdd842e88a7f8c75ecffaf4, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 985522aa310769847adff8a288ac92ca, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -224,7 +224,7 @@ GameObject:
   - component: {fileID: 2522814806075264599}
   - component: {fileID: 636864868065814074}
   m_Layer: 5
-  m_Name: Tree
+  m_Name: stick
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -287,7 +287,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af30f995d1e48fd4cb172a7d629389d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemName: Tree
+  itemName: stick
   quantity: 1
   maxQuantityPerStack: 16
   category: 0

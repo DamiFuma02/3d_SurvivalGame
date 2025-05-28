@@ -142,10 +142,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b58da898c907b54cb42df2941d9c944, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ItemName: Tree
+  ItemName: tree
   itemCategory: 0
   playerInRange: 0
   pickable: 1
+  drops:
+    _Buckets: ffffffff0000000001000000
+    _HashCodes: 6ef814464edb942200000000
+    _Next: ffffffffffffffff00000000
+    _Count: 2
+    _Version: 32
+    _FreeList: -1
+    _FreeCount: 0
+    _Keys:
+    - tree
+    - stick
+    - 
+    _Values: 020000000300000000000000
   health: 10
 --- !u!1 &3021209909682605940
 GameObject:
@@ -243,7 +256,7 @@ GameObject:
   - component: {fileID: 3572597766328831415}
   - component: {fileID: 447209237209203268}
   m_Layer: 0
-  m_Name: Tree_01
+  m_Name: tree
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

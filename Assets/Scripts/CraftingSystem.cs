@@ -57,7 +57,7 @@ public class CraftingSystem : MonoBehaviour
     }
 
     private void GetAllAvailableCraftableInventoryItems() {
-        GameObject[] invIconsGameObjects = Resources.LoadAll<GameObject>("InventorySystemPrefabs");
+        GameObject[] invIconsGameObjects = Resources.LoadAll<GameObject>(InventorySystem.Instance.inventory2dIconsDirectory);
         InventoryItem curr;
         foreach (GameObject item in invIconsGameObjects) {
             curr = item.GetComponent<InventoryItem>();
@@ -78,8 +78,9 @@ public class CraftingSystem : MonoBehaviour
         // get the first default crafting category screen UI 
         // create all the others category crafting screens UI
         GameObject currCategoryCraftingUI;
+        Debug.Log($"Test print {InventorySystem.Instance.crafting2dIconsDirectory + "craftCategoryUi"}");
         for (int i = 0; i < categoryCount; i++) {
-            currCategoryCraftingUI  = Instantiate(Resources.Load<GameObject>("CraftingSystemPrefabs/craftCategoryUi"), craftCategoriesScreenUIParent.transform);
+            currCategoryCraftingUI  = Instantiate(Resources.Load<GameObject>(InventorySystem.Instance.crafting2dIconsDirectory+"craftCategoryUi"), craftCategoriesScreenUIParent.transform);
             currCategoryCraftingUI.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "Craft " + ((ItemCategory)i).ToString();
             AddItemsScreenUIsByCategory(currCategoryCraftingUI,(ItemCategory)i);
             currCategoryCraftingUI.transform.SetParent(craftCategoriesScreenUIParent.transform);
@@ -94,7 +95,7 @@ public class CraftingSystem : MonoBehaviour
     /// If the category count > 9 add a button to go to the text pagee
     /// </summary>
     private void AddItemsScreenUIsByCategory(GameObject craftingCategoryUI, ItemCategory currCategory) {
-        GameObject craftItemUIPrefab = Resources.Load<GameObject>("CraftingSystemPrefabs/craftItemUI");
+        GameObject craftItemUIPrefab = Resources.Load<GameObject>(InventorySystem.Instance.crafting2dIconsDirectory+"craftItemUI");
         // iterate through all the items in the current category
         int categoryIndex = (int)currCategory;
         if (!availableCraftableInventoryItemsByCategory.ContainsKey(currCategory)) {
@@ -112,7 +113,7 @@ public class CraftingSystem : MonoBehaviour
             // translate the current object based on the offset row(Y) and columns(X)
             currCraftItemUI.transform.Translate(new Vector3(xPositionOffset[col], yPositionOffset[row],0), Space.Self);
             currCraftItemUI.transform.Find("ItemName").GetComponent<TextMeshProUGUI>().text = item.itemName;
-            currCraftItemUI.transform.Find("ItemImage").GetComponent<Image>().overrideSprite = Resources.Load<GameObject>("InventorySystemPrefabs/"+item.itemName).transform.Find("ItemImage").GetComponent<Image>().sprite;
+            currCraftItemUI.transform.Find("ItemImage").GetComponent<Image>().overrideSprite = Resources.Load<GameObject>(InventorySystem.Instance.inventory2dIconsDirectory+item.itemName).transform.Find("ItemImage").GetComponent<Image>().sprite;
             currCraftItemUI.transform.Find("CraftingRecipeText").GetComponent<TextMeshProUGUI>().text = CategoryPropertiesToString(item.craftingRecipe);
             InventoryItem currItem = item; // capture the current item
             currCraftItemUI.transform.Find("CraftItemButton").GetComponent<Button>().onClick.AddListener(() => CraftObject(currItem));
@@ -166,7 +167,7 @@ public class CraftingSystem : MonoBehaviour
             if (availableCraftableInventoryItemsByCategory.ContainsKey(category)) {
                 row = validCategoryCount / gridSize;
                 col = validCategoryCount % gridSize;
-                GameObject currCategoryButton = Instantiate(Resources.Load<GameObject>("CraftingSystemPrefabs/openCategoryCraftingMenu"), craftingMenuUI.transform);
+                GameObject currCategoryButton = Instantiate(Resources.Load<GameObject>(InventorySystem.Instance.crafting2dIconsDirectory+"openCategoryCraftingMenu"), craftingMenuUI.transform);
                 currCategoryButton.transform.Translate(new Vector3(xPositionOffset[col], yPositionOffset[row], 0), Space.Self);
                 currCategoryButton.GetComponentInChildren<TextMeshProUGUI>().text = category.ToString();
                 Button button = currCategoryButton.GetComponent<Button>();

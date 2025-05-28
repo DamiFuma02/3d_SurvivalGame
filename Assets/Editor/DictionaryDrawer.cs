@@ -178,3 +178,6 @@ public class CategoryPropertiesDictionaryDrawer : DictionaryDrawer<string, strin
 
 [CustomPropertyDrawer(typeof(CraftingRecipeDictionary))]
 public class CraftingRecipeDictionaryDrawer : DictionaryDrawer<string, int> { }
+
+[CustomPropertyDrawer(typeof(DropItemsDictionary))]
+public class DropItemsDictionaryDrawer : DictionaryDrawer<string, int> { }

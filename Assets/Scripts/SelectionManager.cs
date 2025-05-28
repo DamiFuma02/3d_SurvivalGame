@@ -64,7 +64,7 @@ public class SelectionManager : MonoBehaviour
             if (interactableObject && interactableObject.playerInRange && !InventorySystem.Instance.isOpen) {
                 lookingAtTarget = true;
                 ObjectName.GetComponent<TextMeshProUGUI>().text = hittenObjectTransform.GetComponent<InteractableObject>().GetItemName();
-                GameObject currSprite = Resources.Load<GameObject>("InventorySystemPrefabs/" + hittenObjectTransform.GetComponent<InteractableObject>().GetItemName());
+                GameObject currSprite = Resources.Load<GameObject>(InventorySystem.Instance.inventory2dIconsDirectory + hittenObjectTransform.GetComponent<InteractableObject>().GetItemName());
                 // disable itemproperties in the ui 
                 ObjectLogo.GetComponent<Image>().overrideSprite = currSprite.transform.Find("ItemImage").gameObject.GetComponent<Image>().sprite; 
                 ObjectInfoUI.SetActive(true);

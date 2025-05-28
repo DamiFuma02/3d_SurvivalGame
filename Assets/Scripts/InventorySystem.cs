@@ -5,13 +5,18 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using System.Linq;
 using TMPro;
-using static UnityEditor.Progress;
-using Unity.VisualScripting;
 
 
 public class InventorySystem : MonoBehaviour
 {
     public static InventorySystem Instance { get; set; }
+
+    public string crafting2dIconsDirectory = "2D_Prefabs/CraftingSystemPrefabs/";
+    public string inventory2dIconsDirectory = "2D_Prefabs/InventorySystemPrefabs/";
+    public string equippable2dIconsDirectory = "3D_Prefabs/EquippableItems/";
+    public string interactableObjects3dprefabsDirectory = "3d_Prefabs/InteractableObjects3DPrefabs/";
+
+
 
     public int inventorySize = 20; // total number of slots in the inventory
     public List<int> inventoryRowsColsLimits = new List<int>() { 400, 200 };
@@ -37,7 +42,6 @@ public class InventorySystem : MonoBehaviour
     
     public bool isOpen = false;
     public bool isFull = false;
-
 
     private void Awake() {
         if (Instance != null && Instance != this) {
@@ -92,7 +96,7 @@ public class InventorySystem : MonoBehaviour
         List<GameObject> inventoryScreenSlots = new List<GameObject>();
         for (int j = nCols - 1; j >= 0; j--) {
             for (int i = 0; i < nRows; i++) {
-                currInvSlot = Instantiate(Resources.Load<GameObject>("InventorySystemPrefabs/invSlot"),
+                currInvSlot = Instantiate(Resources.Load<GameObject>(inventory2dIconsDirectory+"invSlot"),
                     inventoryScreenUI.transform
                 );
                 currInvSlot.transform.Translate(new Vector3(xOffsets[i], yOffsets[j], 0), Space.Self);
@@ -104,7 +108,7 @@ public class InventorySystem : MonoBehaviour
         List<GameObject> playerBarSlots = new List<GameObject>();
         GameObject currPlayerBarInvSlot;
         for (int i = 0; i < playerBarSize; i++) {
-            currPlayerBarInvSlot = Instantiate(Resources.Load<GameObject>("InventorySystemPrefabs/playerBarInvSlot"),
+            currPlayerBarInvSlot = Instantiate(Resources.Load<GameObject>(inventory2dIconsDirectory + "playerBarInvSlot"),
                     playerBarUI.transform
                 );
             currPlayerBarInvSlot.transform.Translate(new Vector3(playerBarXOffsets[i], 0, 0), Space.Self);
@@ -135,16 +139,31 @@ public class InventorySystem : MonoBehaviour
         }
     }
 
-    private void SelectItemInPlayerBar(int v) {
+    private void SelectItemInPlayerBar(int selectedPlayerBarSlotIdx) {
         for (int i = 0; i < playerBarSize; i++) {
             // other than the hotKey child, check if thereis another child, the 2d prefab of an item in the inventory
             Color currColor = Color.white;
             Color prevColor;
-            if (i == v && playerBarSlotsArray[i].transform.childCount > 1) {
+            if (i == selectedPlayerBarSlotIdx && playerBarSlotsArray[i].transform.childCount > 1) {
                 prevColor = playerBarSlotsArray[i].transform.Find("hotKey").GetComponent<TextMeshProUGUI>().color;
                 currColor = prevColor == Color.black ? Color.white : Color.black;
+                ToggleEquippedItem(selectedPlayerBarSlotIdx, prevColor == Color.black);
             }
             playerBarSlotsArray[i].transform.Find("hotKey").GetComponent<TextMeshProUGUI>().color = currColor;
+        }
+    }
+
+
+    private void ToggleEquippedItem(int playerBarSlotIdx,bool prevEquipped) {
+        Transform firstPersonCamera = PlayerMovement.instance.firstPersonCamera;
+        if (firstPersonCamera.childCount>0) {
+            Destroy(firstPersonCamera.GetChild(0));
+        }
+        if (!prevEquipped) {
+            Instantiate(Resources.Load<GameObject>(equippable2dIconsDirectory + inventoryItems[playerBarSlotIdx].itemName),
+                firstPersonCamera
+            );
+            
         }
     }
 
@@ -216,7 +235,12 @@ public class InventorySystem : MonoBehaviour
     public void AddToInventory(string itemName,ItemCategory itemCategory=ItemCategory.CraftingItem, int itemQuantity=1) {
         bool itemFoundInInventory = CheckIfItemInInventory(itemName);
         int validIdx = GetFirstInsertionValidIndex(itemName, itemFoundInInventory);
-        Assert.AreNotEqual(validIdx,-1,"The inventory is Full");
+        if (validIdx == -1) { // no valid index found so the inventory is full
+            Debug.LogWarning("Inventory is full. Cannot add item: " + itemName);
+            DropItems(itemName, itemCategory,itemQuantity);
+            return;
+        }
+        
         GameObject chosenSlot = inventorySlotsArray[validIdx];
         if (chosenSlot.transform.childCount > 0) {
             InventoryItem currItem = chosenSlot.transform.Find(itemName + "(Clone)").GetComponent<InventoryItem>();
@@ -230,7 +254,7 @@ public class InventorySystem : MonoBehaviour
         }
         else {  // first time adding the item to this inventory slot
             GameObject itemToAdd = GameObject.Instantiate(
-                        Resources.Load<GameObject>("InventorySystemPrefabs/" + itemName),
+                        Resources.Load<GameObject>(inventory2dIconsDirectory + itemName),
                         chosenSlot.transform.position,
                         chosenSlot.transform.rotation
                     );
@@ -242,6 +266,16 @@ public class InventorySystem : MonoBehaviour
         
         
         UpdateInventoryUI();
+    }
+
+    private void DropItems(string itemName, ItemCategory itemCategory, int itemQuantity) {
+        GameObject item3dPrefab = Resources.Load<GameObject>(interactableObjects3dprefabsDirectory + itemName);
+        Assert.AreEqual(item3dPrefab.GetComponent<InteractableObject>().itemCategory, itemCategory,"Error the item categories don't match");
+        for (int i = 0; i < itemQuantity; i++) {
+            Instantiate(item3dPrefab,
+                transform.position + Vector3.up * 0.5f + Vector3.forward * i,  // slightly above the ground
+                Quaternion.identity);
+        }
     }
 
 
@@ -353,6 +387,14 @@ public class InventorySystem : MonoBehaviour
         return true;
     }
 
-
-
+    internal void AddToInventoryOrDropItems(string itemName, ItemCategory itemCategory, DropItemsDictionary drops=null) {
+        if (drops.Count > 0) {
+            foreach (var drop in drops) {
+                AddToInventory(drop.Key, Resources.Load<GameObject>(inventory2dIconsDirectory + drop.Key).GetComponent<InventoryItem>().category, drop.Value);
+            }
+        } else {
+            // if no drops are specified, just add the item to the inventory
+            AddToInventory(itemName, itemCategory, 1);
+        }
+    }
 }

@@ -201,7 +201,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 32fb7e0aee1614fe8ac38467a139e9a6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: a332f9cc2040f6042a04c65fa9e4a000, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -224,7 +224,7 @@ GameObject:
   - component: {fileID: 2522814806075264599}
   - component: {fileID: 636864868065814074}
   m_Layer: 5
-  m_Name: hammer
+  m_Name: sword
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -287,10 +287,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af30f995d1e48fd4cb172a7d629389d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemName: hammer
+  itemName: sword
   quantity: 1
   maxQuantityPerStack: 16
-  category: 3
+  category: 4
   categoryProperties:
     _Buckets: ffffffffffffffffffffffff
     _HashCodes: ffffffff0000000000000000
@@ -308,15 +308,15 @@ MonoBehaviour:
     - 
     - 
   craftingRecipe:
-    _Buckets: ffffffff01000000ffffffff
-    _HashCodes: 37ef13604efd144600000000
-    _Next: ffffffff0000000000000000
+    _Buckets: ffffffff0000000001000000
+    _HashCodes: 37ef13604edb942200000000
+    _Next: ffffffffffffffff00000000
     _Count: 2
-    _Version: 22
+    _Version: 54
     _FreeList: -1
     _FreeCount: 0
     _Keys:
     - stone
-    - Tree
+    - stick
     - 
-    _Values: 030000000200000000000000
+    _Values: 020000000100000000000000

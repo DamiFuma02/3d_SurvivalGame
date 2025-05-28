@@ -3,8 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NewBehaviourScript : MonoBehaviour
+public class PlayerMovement : MonoBehaviour
 {
+    public static PlayerMovement instance { get; set; }
+
+
     public CharacterController characterController;
 
     public Transform firstPersonCamera;
@@ -20,6 +23,17 @@ public class NewBehaviourScript : MonoBehaviour
     float z;
 
     Vector3 move;
+
+    private void Awake() {
+        if (instance != null && instance != this) {
+            Destroy(gameObject);
+        }
+        else {
+            instance = this;
+        }
+    }
+
+
 
     // Update is called once per frame
     void Update()
