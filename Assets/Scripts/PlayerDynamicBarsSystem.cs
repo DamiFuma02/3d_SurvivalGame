@@ -8,11 +8,23 @@ using UnityEngine.UI;
 
 public class PlayerDynamicBarsSystem : MonoBehaviour
 {
+
+    public static PlayerDynamicBarsSystem Instance { get; set; }
+
+    private void Awake() {
+        if (Instance != null && Instance != this) {
+            Destroy(gameObject);
+        }
+        else {
+            Instance = this;
+        }
+    }
+
     private enum BarType {
         Health,Food,Water
     }
-    int[] maxValues = { 1000,1000,1000 };
-    int[] currValues = { 1000, 1000, 1000 };
+    public int[] maxValues = { 1000,1000,1000 };
+    public int[] currValues = { 1000, 1000, 1000 };
     public bool isDead;
 
     public GameObject dynamicBarsUI;
@@ -72,6 +84,13 @@ public class PlayerDynamicBarsSystem : MonoBehaviour
             coroutines[0] = StartCoroutine(TakeDamage());
         }
     }
+
+    public void ConsumeItem(InventoryItem inventoryItem) {
+        if (inventoryItem.categoryProperties == null && inventoryItem.categoryProperties.Count == 0) {
+            return;
+        }
+    }
+
 
 
     public void UpdateBarsUI() {

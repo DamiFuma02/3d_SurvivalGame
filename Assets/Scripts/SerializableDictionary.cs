@@ -533,7 +533,7 @@ public class SerializableDictionary<TKey, TValue> : IDictionary<TKey, TValue>
             get { return _Current; }
         }
 
-        internal Enumerator(SerializableDictionary<TKey, TValue> dictionary)
+        public Enumerator(SerializableDictionary<TKey, TValue> dictionary)
         {
             _Dictionary = dictionary;
             _Version = dictionary._Version;

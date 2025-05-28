@@ -13,7 +13,8 @@ public class InteractableObject : MonoBehaviour {
     public bool playerInRange;
     public bool pickable = true;
     public DropItemsDictionary drops = new DropItemsDictionary();
-    
+
+
     public int health = 10;
 
     public string GetItemName() {
@@ -34,6 +35,10 @@ public class InteractableObject : MonoBehaviour {
         if (!InventorySystem.Instance.isOpen && playerInRange && Input.GetKeyDown(KeyCode.Mouse0) && SelectionManager.instance.lookingAtTarget && SelectionManager.instance.selectedObject == gameObject) {
             
             if (pickable) {
+                if (InventorySystem.Instance.equippedItemFlag) {
+                    Debug.Log("Start Coroutine");
+                    StartCoroutine(InventorySystem.Instance.AnimateEquippedItem());
+                }
                 InventorySystem.Instance.AddToInventoryOrDropItems(ItemName,itemCategory,drops);
                 Destroy(gameObject);
             } else {

@@ -9,8 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5534657953996380793}
+  - component: {fileID: 4638781823778495695}
   m_Layer: 0
-  m_Name: pickaxe
+  m_Name: pickaxeEquipped
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -24,14 +25,44 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5155102332380162311}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 0.313, y: -0.221, z: 0.376}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 8718752941027010800}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+--- !u!114 &4638781823778495695
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5155102332380162311}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b58da898c907b54cb42df2941d9c944, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ItemName: pickaxe
+  itemCategory: 3
+  playerInRange: 0
+  pickable: 0
+  drops:
+    _Buckets: ffffffffffffffffffffffff
+    _HashCodes: 000000000000000000000000
+    _Next: 000000000000000000000000
+    _Count: 0
+    _Version: 0
+    _FreeList: -1
+    _FreeCount: 0
+    _Keys:
+    - 
+    - 
+    - 
+    _Values: 000000000000000000000000
+  health: 10
 --- !u!1 &8337547433856660042
 GameObject:
   m_ObjectHideFlags: 0

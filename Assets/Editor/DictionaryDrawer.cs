@@ -174,7 +174,7 @@ public abstract class DictionaryDrawer<TK, TV> : PropertyDrawer {
 }
 
 [CustomPropertyDrawer(typeof(CategoryPropertiesDictionary))]
-public class CategoryPropertiesDictionaryDrawer : DictionaryDrawer<string, string> { }
+public class CategoryPropertiesDictionaryDrawer : DictionaryDrawer<string, int> { }
 
 [CustomPropertyDrawer(typeof(CraftingRecipeDictionary))]
 public class CraftingRecipeDictionaryDrawer : DictionaryDrawer<string, int> { }

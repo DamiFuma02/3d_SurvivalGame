@@ -8,12 +8,32 @@ using UnityEngine.EventSystems;
 using System.Text.Json;
 
 
-[Serializable] public class CategoryPropertiesDictionary: SerializableDictionary<string, string> { }
+[Serializable]
+public class CategoryPropertiesDictionary : SerializableDictionary<string, int> {
+    /// <summary>
+    /// Creates empty dictionary. :base() can be removed an it will work
+    /// </summary>
+    public CategoryPropertiesDictionary() :base() {}
+    /// <summary>
+    /// calls the constructor for the parent class SerializableDictionary<string,string> 
+    /// </summary>
+    /// <param name="dictionary">argument of the parent (base) constructor</param>
+    public CategoryPropertiesDictionary(IDictionary<string, int> dictionary) : base(dictionary) {}
+}
 [Serializable] public class CraftingRecipeDictionary: SerializableDictionary<string, int> { }
 
 public enum ItemCategory {
     CraftingItem, Consumable, Armor, Tool, Weapon
 }
+
+public enum ItemMaterial {
+    Wood,Stone
+}
+
+public enum ArmorType {
+    Helmet, Chestplate, Leggings, Boots
+}
+
 
 
 public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler {
@@ -24,7 +44,7 @@ public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     // key: property name, value: property value (can be any type)
     public CategoryPropertiesDictionary categoryProperties = new CategoryPropertiesDictionary();
     // key: item name, value: item quantity required for crafting
-    public CraftingRecipeDictionary craftingRecipe = new CraftingRecipeDictionary(); 
+    public CraftingRecipeDictionary craftingRecipe = new CraftingRecipeDictionary();
 
 
     GameObject hoveredItemInfoUI;
@@ -69,16 +89,50 @@ public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     // Start is called before the first frame update
     void Start()
     {
-        SetMaxQuantityByCategory();
+        AssertCorrectInstanceValues();
         GetHoverInfoUIComponents();
     }
 
-    private void SetMaxQuantityByCategory() {
+    
+    private void AssertCorrectInstanceValues() {
         if ((int)category < 2) {
             maxQuantityPerStack = 16;
         }
         else {
             maxQuantityPerStack = 1;
+        }
+
+        Dictionary<string, int> requiredCategoryPropertiesIDict = new Dictionary<string, int>();
+        switch (category) {
+            case ItemCategory.Consumable:
+                requiredCategoryPropertiesIDict = new Dictionary<string, int>() {
+                        { "health", 0 },
+                        { "food", 0 },
+                        { "water", 0 }
+                    };
+                break;
+            case ItemCategory.Tool:
+                requiredCategoryPropertiesIDict = new Dictionary<string, int>() {
+                        { "breakableMaterial", (int)ItemMaterial.Stone },
+                        { "durability", 0 },
+                    };
+                break;
+            case ItemCategory.CraftingItem:
+                requiredCategoryPropertiesIDict = new Dictionary<string, int>() {
+                        { "material", (int)ItemMaterial.Stone }
+                    };
+                break;
+            default:
+                break;
+        }
+        if (categoryProperties == null || categoryProperties.Count == 0) {
+            categoryProperties = new CategoryPropertiesDictionary(requiredCategoryPropertiesIDict);
+        }
+        // if empty it will simply not be executed
+        foreach (var keyValuePair in requiredCategoryPropertiesIDict) {
+            if (!categoryProperties.ContainsKey(keyValuePair.Key)) {
+                categoryProperties.Add(keyValuePair);
+            }
         }
     }
 

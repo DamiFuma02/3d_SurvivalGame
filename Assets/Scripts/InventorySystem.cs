@@ -13,9 +13,9 @@ public class InventorySystem : MonoBehaviour
 
     public string crafting2dIconsDirectory = "2D_Prefabs/CraftingSystemPrefabs/";
     public string inventory2dIconsDirectory = "2D_Prefabs/InventorySystemPrefabs/";
-    public string equippable3dIconsDirectory = "3D_Prefabs/EquippableItems/";
     public string interactableObjects3dprefabsDirectory = "3d_Prefabs/InteractableObjects3DPrefabs/";
 
+    
 
 
     public int inventorySize = 20; // total number of slots in the inventory
@@ -42,6 +42,10 @@ public class InventorySystem : MonoBehaviour
     
     public bool isOpen = false;
     public bool isFull = false;
+    public bool equippedItemFlag;
+    private int equippedPlayerBarIdx;
+    private Transform firstPersonCamera;
+    private Transform equippedItemUI;
 
     private void Awake() {
         if (Instance != null && Instance != this) {
@@ -137,27 +141,58 @@ public class InventorySystem : MonoBehaviour
     
     void Update() {
         ToggleInventory();
-        CheckPlayerBarHotKeyPress();
-        
+        CheckPlayerKeyPress();
     }
 
-    private void CheckPlayerBarHotKeyPress() {
+    /// <summary>
+    /// Checks if the player has pressed a number key from 0 to 9 
+    /// or the right mouse button to consume an ItemCategory.Consumable item equipped from the the player bar.
+    /// </summary>
+    private void CheckPlayerKeyPress() {
         int startNumber = (int)KeyCode.Alpha0;  
         for (int i = (int)KeyCode.Alpha0; i <= (int)KeyCode.Alpha9; i++) {
             if (Input.GetKeyDown((KeyCode)i)) {
                 SelectItemInPlayerBar(i-startNumber-1);
             }
         }
+        if (equippedItemFlag && Input.GetKeyDown(KeyCode.Mouse1)) {
+            equippedItemUI = firstPersonCamera.transform.Find("EquippedItemUI");
+            // get the InteractableObject component of the equipped item
+            if (inventoryItems[equippedPlayerBarIdx].category == ItemCategory.Consumable) {
+                StartCoroutine(AnimateEquippedItem());
+                // consume 1 item and 
+                PlayerDynamicBarsSystem.Instance.ConsumeItem(inventoryItems[equippedPlayerBarIdx]);
+                RemoveFromInventory(inventoryItems[equippedPlayerBarIdx].itemName, 1);
+                if (inventoryItems[equippedPlayerBarIdx] == null) {
+                    Destroy(equippedItemUI.transform.GetChild(0).gameObject);
+                    equippedItemFlag = false;
+                    equippedPlayerBarIdx = -1;
+                    equippedItemUI.gameObject.SetActive(false);
+                    // resets all the playerbar icons to white whitout calling the toggle method
+                    SelectItemInPlayerBar(playerBarSize + 1);
+                }
+            }
+            else {
+                Debug.LogWarning("Cannot consume an item that is not a Consumable type");
+            }
+        }
     }
 
+
+
+    /// <summary>
+    /// if selectedPlayerBarSlotIdx>playerBarSize sets all to white whitout calling the Toggle Method
+    /// </summary>
+    /// <param name="selectedPlayerBarSlotIdx"></param>
     private void SelectItemInPlayerBar(int selectedPlayerBarSlotIdx) {
         for (int i = 0; i < playerBarSize; i++) {
-            // other than the hotKey child, check if thereis another child, the 2d prefab of an item in the inventory
             Color currColor = Color.white;
-            Color prevColor;
-            if (i == selectedPlayerBarSlotIdx && playerBarSlotsArray[i].transform.childCount > 1) {
+            Color prevColor = Color.white;
+            // other than the hotKey child, check if thereis another child, the 2d prefab of an item in the inventory
+            if (i == selectedPlayerBarSlotIdx && inventoryItems[selectedPlayerBarSlotIdx] != null) {        
                 prevColor = playerBarSlotsArray[i].transform.Find("hotKey").GetComponent<TextMeshProUGUI>().color;
                 currColor = prevColor == Color.black ? Color.white : Color.black;
+                // not valid because the items has been removed from inventoryItems so it tries to access at null
                 ToggleEquippedItem(selectedPlayerBarSlotIdx, prevColor == Color.black);
             }
             playerBarSlotsArray[i].transform.Find("hotKey").GetComponent<TextMeshProUGUI>().color = currColor;
@@ -165,16 +200,27 @@ public class InventorySystem : MonoBehaviour
     }
 
 
+    /// <summary>
+    /// Toggles the equipped item with the animator component inside the first person camera UI 
+    /// </summary>
+    /// <param name="playerBarSlotIdx"></param>
+    /// <param name="prevEquipped"></param>
     private void ToggleEquippedItem(int playerBarSlotIdx,bool prevEquipped) {
-        Transform firstPersonCamera = PlayerMovement.instance.firstPersonCamera;
-        if (firstPersonCamera.childCount>0) {
-            Destroy(firstPersonCamera.GetChild(0).gameObject);
+        firstPersonCamera = PlayerMovement.instance.firstPersonCamera;
+        equippedItemUI = firstPersonCamera.Find("EquippedItemUI");
+        if (equippedItemUI.transform.childCount>0) {
+            Destroy(equippedItemUI.transform.GetChild(0).gameObject);
+            equippedItemFlag = false;
+            equippedPlayerBarIdx = -1;
+            equippedItemUI.gameObject.SetActive(false);  
         }
         if (!prevEquipped && inventoryItems[playerBarSlotIdx].category != ItemCategory.CraftingItem && inventoryItems[playerBarSlotIdx].category!=ItemCategory.Armor) {
-            Instantiate(Resources.Load<GameObject>(equippable3dIconsDirectory + inventoryItems[playerBarSlotIdx].itemName),
-                firstPersonCamera
+            Instantiate(Resources.Load<GameObject>(interactableObjects3dprefabsDirectory + inventoryItems[playerBarSlotIdx].itemName+"Equipped"),
+                equippedItemUI.transform
             );
-            
+            equippedItemFlag = true;
+            equippedPlayerBarIdx = playerBarSlotIdx;
+            equippedItemUI.gameObject.SetActive(true);
         }
     }
 
@@ -407,5 +453,22 @@ public class InventorySystem : MonoBehaviour
             // if no drops are specified, just add the item to the inventory
             AddToInventory(itemName, itemCategory, 1);
         }
+    }
+
+    /// <summary>
+    /// The equipped item cannot have category=ItemCategory.CraftingItem and ItemCategory.Armor
+    /// </summary>
+    public IEnumerator AnimateEquippedItem() {
+        firstPersonCamera = PlayerMovement.instance.firstPersonCamera;
+        equippedItemUI = firstPersonCamera.Find("EquippedItemUI");
+
+        if (equippedItemUI.childCount==0) {
+            Debug.Log("NO Animation");
+            yield return null;  // no equipped item to animate
+        }
+        ItemCategory currentItemCategory = equippedItemUI.GetChild(0).GetComponent<InteractableObject>().itemCategory;
+        string triggerName = currentItemCategory == ItemCategory.Consumable ? "Hit" : "Hit";
+        equippedItemUI.GetComponent<Animator>().SetTrigger(triggerName);
+        yield return new WaitUntil(() => !equippedItemUI.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("equippedItem_action"));
     }
 }
