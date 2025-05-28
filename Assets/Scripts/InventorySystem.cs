@@ -90,28 +90,39 @@ public class InventorySystem : MonoBehaviour
         int nRows = gridSizes[0];
         int nCols = gridSizes[1];
         Debug.Assert(nRows >= nCols, "The number of rows must be >= the number of columns");
-        int[] xOffsets = Enumerable.Range(0, nRows).Select(i => -inventoryRowsColsLimits[0] + i * (2 * inventoryRowsColsLimits[0]) / (nRows - 1)).ToArray();
-        int[] yOffsets = Enumerable.Range(0, nCols).Select(i => -inventoryRowsColsLimits[1] + i * (2 * inventoryRowsColsLimits[1]) / (nCols - 1)).ToArray();
         GameObject currInvSlot;
+        RectTransform currRectTransform;
         List<GameObject> inventoryScreenSlots = new List<GameObject>();
-        for (int j = nCols - 1; j >= 0; j--) {
+        float parentWidth = inventoryScreenUI.transform.GetComponent<RectTransform>().rect.width;
+        float parentHeight = inventoryScreenUI.transform.GetComponent<RectTransform>().rect.height;
+        float slotWidth = parentWidth / nRows;
+        float slotHeight = parentHeight / nCols;
+        float xPos, yPos;
+        for (int j = 0; j < nCols; j++) {
             for (int i = 0; i < nRows; i++) {
                 currInvSlot = Instantiate(Resources.Load<GameObject>(inventory2dIconsDirectory+"invSlot"),
                     inventoryScreenUI.transform
                 );
-                currInvSlot.transform.Translate(new Vector3(xOffsets[i], yOffsets[j], 0), Space.Self);
+                currRectTransform = currInvSlot.GetComponent<RectTransform>();
+                xPos = (i * slotWidth) - (parentWidth / 2) + (slotWidth / 2);
+                yPos = (-j * slotHeight) + (parentHeight / 2) - (slotHeight / 2);
+                currRectTransform.anchoredPosition = new Vector2(xPos, yPos);
                 currInvSlot.gameObject.SetActive(true);
-                inventoryScreenSlots.Add(currInvSlot);
+                inventoryScreenSlots.Add(currInvSlot);  
             }
         }
-        int[] playerBarXOffsets = Enumerable.Range(0, playerBarSize).Select(i => -playerBarXOffset + i * (2 * playerBarXOffset) / (playerBarSize - 1)).ToArray();
+        
         List<GameObject> playerBarSlots = new List<GameObject>();
         GameObject currPlayerBarInvSlot;
+        parentWidth = playerBarUI.transform.GetComponent<RectTransform>().rect.width;
+        slotWidth = parentWidth / playerBarSize;
         for (int i = 0; i < playerBarSize; i++) {
             currPlayerBarInvSlot = Instantiate(Resources.Load<GameObject>(inventory2dIconsDirectory + "playerBarInvSlot"),
                     playerBarUI.transform
                 );
-            currPlayerBarInvSlot.transform.Translate(new Vector3(playerBarXOffsets[i], 0, 0), Space.Self);
+            currRectTransform = currPlayerBarInvSlot.GetComponent<RectTransform>();
+            xPos = (i * slotWidth) - (parentWidth / 2) + (slotWidth / 2);
+            currRectTransform.anchoredPosition = new Vector2(xPos, 0);
             currPlayerBarInvSlot.gameObject.SetActive(true);
             currPlayerBarInvSlot.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = (i + 1).ToString();
             playerBarSlots.Add(currPlayerBarInvSlot);
@@ -123,7 +134,7 @@ public class InventorySystem : MonoBehaviour
         inventoryItems = new InventoryItem[inventorySlotsArray.Length];
     }
 
-
+    
     void Update() {
         ToggleInventory();
         CheckPlayerBarHotKeyPress();
@@ -387,7 +398,7 @@ public class InventorySystem : MonoBehaviour
         return true;
     }
 
-    internal void AddToInventoryOrDropItems(string itemName, ItemCategory itemCategory, DropItemsDictionary drops=null) {
+    public void AddToInventoryOrDropItems(string itemName, ItemCategory itemCategory, DropItemsDictionary drops=null) {
         if (drops.Count > 0) {
             foreach (var drop in drops) {
                 AddToInventory(drop.Key, Resources.Load<GameObject>(inventory2dIconsDirectory + drop.Key).GetComponent<InventoryItem>().category, drop.Value);

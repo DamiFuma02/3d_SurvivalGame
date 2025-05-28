@@ -69,7 +69,17 @@ public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     // Start is called before the first frame update
     void Start()
     {
+        SetMaxQuantityByCategory();
         GetHoverInfoUIComponents();
+    }
+
+    private void SetMaxQuantityByCategory() {
+        if ((int)category < 2) {
+            maxQuantityPerStack = 16;
+        }
+        else {
+            maxQuantityPerStack = 1;
+        }
     }
 
     private void GetHoverInfoUIComponents() {

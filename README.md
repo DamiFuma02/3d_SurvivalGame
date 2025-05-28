@@ -49,10 +49,13 @@
 
 ## 4. Picking up Items
 
-> Use a prefab to define the items to pick up
+> Use a prefab to define the items to pick up and add InteractableObject.cs script
 
 * Create a second Box Collider with "isTrigger=true" per usare OnTrigger per capire se il player è vicino all'oggetto
 * Edit > Project Settings > Phyisics > Query Trigger disabled in order to raycast only the first smaller default Box Collider in the prefab
+* for each pickable item there must exist a 2d version (InventoryItem)
+* when picking the item, the InventorySystem handles the case in which the inventory is full and creates a gameObject on the ground with the remaining drops not added to the inventory
+* if the item isn't pickable, decrease the health and then drop the item
 
 
 ## 5. Inventory System UI
@@ -66,7 +69,7 @@
     * Attach InventorySystem SingleTon object
     * Handle mouse movements when inventory open or closed pressing "E" key
     * Optional (Not Implemented): handle keyboard movements when inventory open
-
+* Each
 
 ## 6. Inventory System Summary
 
@@ -81,13 +84,10 @@
     * Assign DragDrop script for each 2d prefab and save it inside Resources folder with a filename equal to the 3d prefab itemName
     * Optional (not implemented): use directories to create a simple UI > Image and assign it the image red from the folders
 * Fixed Mouse Movements: Mouse Y (UP DOWN) rotates only the camera not the player
-* Inventory System: create empty gameobject with assigned the script
-    * create a List< GameObject > slotList and populate it reading only the slots with "itemSlot" tag
-    * CheckFull() scanning the list and returning false if at least one slot is empty
-    * FindFirstEmptySlot() scanning the list and returning the first empty slot
-    * When pcking up a 3d prefab it must be destroyed and add it to the inventory
-        * Destroy the 3d prefab 
-        * AddToInventory(itemName): Instantiate a 2d prefab UI icon for the inventory and add it in the first empty slot found by the responsable
+* Inventory System: create empty gameobject with assigned the script    
+    * Each InventoryItem must be a 2d prefab with quantity and maxQuantityPerStack
+    * Use SerializableDictionary<T,T>() to create a custom class for the dictionary that can be serialized and the values can be modified through the Unity Inspector UI for each gameObject with the InventoryItem.cs component attached
+    * If an InteractableObject doesn't have any explicit drops in the dictionary, it must drop 1 item of itself
 * Inside SelectionManager Singleton class create a field public GameObject selectedObject; to save the current 3d prefab 
     * Inside the InteractableObject.Update() add the condition SelectionManager.instance.selectedObject == gameObject in order to check if the item is the right one
     * This prevents the game to pickup multiple oblject very close to each other when the trigger boxcollider overlaps between different gameObjects

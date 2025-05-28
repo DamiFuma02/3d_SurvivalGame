@@ -136,7 +136,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &75260687
 RectTransform:
   m_ObjectHideFlags: 0
@@ -154,8 +154,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -411, y: 230}
-  m_SizeDelta: {x: 100, y: 85.124}
+  m_AnchoredPosition: {x: -410, y: 230}
+  m_SizeDelta: {x: 100, y: 85}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &75260688
 MonoBehaviour:
@@ -3561,7 +3561,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   crafting2dIconsDirectory: 2D_Prefabs/CraftingSystemPrefabs/
   inventory2dIconsDirectory: 2D_Prefabs/InventorySystemPrefabs/
-  equippable2dIconsDirectory: 3D_Prefabs/EquippableItems/
+  equippable3dIconsDirectory: 3D_Prefabs/EquippableItems/
   interactableObjects3dprefabsDirectory: 3D_Prefabs/InteractableObjects3DPrefabs/
   inventorySize: 20
   inventoryRowsColsLimits: 90010000c8000000
