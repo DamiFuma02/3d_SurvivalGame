@@ -289,7 +289,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: pickaxe
   quantity: 1
-  maxQuantityPerStack: 16
+  maxQuantityPerStack: 1
   category: 3
   categoryProperties:
     _Buckets: ffffffffffffffffffffffff

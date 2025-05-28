@@ -13,7 +13,7 @@ public class InventorySystem : MonoBehaviour
 
     public string crafting2dIconsDirectory = "2D_Prefabs/CraftingSystemPrefabs/";
     public string inventory2dIconsDirectory = "2D_Prefabs/InventorySystemPrefabs/";
-    public string equippable2dIconsDirectory = "3D_Prefabs/EquippableItems/";
+    public string equippable3dIconsDirectory = "3D_Prefabs/EquippableItems/";
     public string interactableObjects3dprefabsDirectory = "3d_Prefabs/InteractableObjects3DPrefabs/";
 
 
@@ -157,10 +157,10 @@ public class InventorySystem : MonoBehaviour
     private void ToggleEquippedItem(int playerBarSlotIdx,bool prevEquipped) {
         Transform firstPersonCamera = PlayerMovement.instance.firstPersonCamera;
         if (firstPersonCamera.childCount>0) {
-            Destroy(firstPersonCamera.GetChild(0));
+            Destroy(firstPersonCamera.GetChild(0).gameObject);
         }
-        if (!prevEquipped) {
-            Instantiate(Resources.Load<GameObject>(equippable2dIconsDirectory + inventoryItems[playerBarSlotIdx].itemName),
+        if (!prevEquipped && inventoryItems[playerBarSlotIdx].category != ItemCategory.CraftingItem && inventoryItems[playerBarSlotIdx].category!=ItemCategory.Armor) {
+            Instantiate(Resources.Load<GameObject>(equippable3dIconsDirectory + inventoryItems[playerBarSlotIdx].itemName),
                 firstPersonCamera
             );
             

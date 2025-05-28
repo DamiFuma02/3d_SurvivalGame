@@ -133,7 +133,7 @@ public class CraftingSystem : MonoBehaviour
             InventorySystem.Instance.RemoveFromInventory(keyValue.Key, keyValue.Value);
         }
         // add the crafted item to the inventory
-        InventorySystem.Instance.AddToInventory(itemToCraft.itemName);
+        InventorySystem.Instance.AddToInventory(itemToCraft.itemName,itemToCraft.category);
         CheckAllCraftingRecipesInCategory((int)itemToCraft.category);
     }
 

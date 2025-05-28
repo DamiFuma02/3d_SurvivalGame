@@ -9,7 +9,7 @@ using UnityEngine;
 
 public class InteractableObject : MonoBehaviour {
     public string ItemName;
-    public ItemCategory itemCategory = ItemCategory.CraftingItem;
+    public ItemCategory itemCategory;
     public bool playerInRange;
     public bool pickable = true;
     public DropItemsDictionary drops = new DropItemsDictionary();
