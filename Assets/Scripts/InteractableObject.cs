@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 
@@ -13,7 +14,6 @@ public class InteractableObject : MonoBehaviour {
     public bool playerInRange;
     public bool pickable = true;
     public DropItemsDictionary drops = new DropItemsDictionary();
-
 
     public int health = 10;
 
@@ -29,6 +29,17 @@ public class InteractableObject : MonoBehaviour {
         playerInRange = false;
     }
 
+
+    private void Start() {
+        // assert that all items in the drops dictionary have a positive quantity
+        if (drops.Count == 0) {
+            return;   
+        }
+        foreach (string key in drops.Keys.ToList()) {
+            drops[key] = Mathf.Max(1, drops[key]); // ensure at least 1 item is dropped
+        }
+
+    }
 
     private void Update() {
         // pickup an object with left click

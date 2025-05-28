@@ -46,6 +46,7 @@ public class InventorySystem : MonoBehaviour
     private int equippedPlayerBarIdx;
     private Transform firstPersonCamera;
     private Transform equippedItemUI;
+    private System.Random random;
 
     private void Awake() {
         if (Instance != null && Instance != this) {
@@ -445,9 +446,14 @@ public class InventorySystem : MonoBehaviour
     }
 
     public void AddToInventoryOrDropItems(string itemName, ItemCategory itemCategory, DropItemsDictionary drops=null) {
+        random = new System.Random();
+
         if (drops.Count > 0) {
             foreach (var drop in drops) {
-                AddToInventory(drop.Key, Resources.Load<GameObject>(inventory2dIconsDirectory + drop.Key).GetComponent<InventoryItem>().category, drop.Value);
+                // heads or tails to decide if to add the item to the inventory or not
+                if (random.Next(0,2) == 1) {
+                    AddToInventory(drop.Key, Resources.Load<GameObject>(inventory2dIconsDirectory + drop.Key).GetComponent<InventoryItem>().category, random.Next(1, drop.Value));
+                }
             }
         } else {
             // if no drops are specified, just add the item to the inventory

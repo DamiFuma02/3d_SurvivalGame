@@ -114,7 +114,7 @@ public class CraftingSystem : MonoBehaviour
             currCraftItemUI.transform.Translate(new Vector3(xPositionOffset[col], yPositionOffset[row],0), Space.Self);
             currCraftItemUI.transform.Find("ItemName").GetComponent<TextMeshProUGUI>().text = item.itemName;
             currCraftItemUI.transform.Find("ItemImage").GetComponent<Image>().overrideSprite = Resources.Load<GameObject>(InventorySystem.Instance.inventory2dIconsDirectory+item.itemName).transform.Find("ItemImage").GetComponent<Image>().sprite;
-            currCraftItemUI.transform.Find("CraftingRecipeText").GetComponent<TextMeshProUGUI>().text = CategoryPropertiesToString(item.craftingRecipe);
+            currCraftItemUI.transform.Find("CraftingRecipeText").GetComponent<TextMeshProUGUI>().text = CraftingRecipeToString(item.craftingRecipe);
             InventoryItem currItem = item; // capture the current item
             currCraftItemUI.transform.Find("CraftItemButton").GetComponent<Button>().onClick.AddListener(() => CraftObject(currItem));
             currCraftItemUI.SetActive(true); // set the UI as active 
@@ -137,7 +137,7 @@ public class CraftingSystem : MonoBehaviour
         CheckAllCraftingRecipesInCategory((int)itemToCraft.category);
     }
 
-    private string CategoryPropertiesToString(CraftingRecipeDictionary craftingRecipe) {
+    private string CraftingRecipeToString(CraftingRecipeDictionary craftingRecipe) {
         if (craftingRecipe.Count == 0) {
             return "";
         }
