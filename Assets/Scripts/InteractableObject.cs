@@ -16,7 +16,7 @@ public class InteractableObject : MonoBehaviour {
     //  with the brakeableMaterial property matching the current itemMaterial
     public bool pickableByHand = true;
     public DropItemsDictionary drops = new DropItemsDictionary();
-    public ItemMaterial itemMaterial = ItemMaterial.Wood; // default material
+    public ItemMaterial itemMaterial = ItemMaterial.NoMaterial; // default material
 
     public int initialHealth = 10;
     public int currHealth;

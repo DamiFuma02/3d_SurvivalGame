@@ -216,9 +216,10 @@ public class InventorySystem : MonoBehaviour
             equippedItemUI.gameObject.SetActive(false);  
         }
         if (!prevEquipped && inventoryItems[playerBarSlotIdx].category != ItemCategory.CraftingItem && inventoryItems[playerBarSlotIdx].category!=ItemCategory.Armor) {
-            Instantiate(Resources.Load<GameObject>(interactableObjects3dprefabsDirectory + inventoryItems[playerBarSlotIdx].itemName),
+            string materialString = inventoryItems[playerBarSlotIdx].itemMaterial.ToString().ToLower();
+            Instantiate(Resources.Load<GameObject>(interactableObjects3dprefabsDirectory + materialString + inventoryItems[playerBarSlotIdx].itemName),
                 equippedItemUI.transform
-            ).transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+            ).transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
             equippedItemFlag = true;
             equippedPlayerBarIdx = playerBarSlotIdx;
             equippedItemUI.gameObject.SetActive(true);

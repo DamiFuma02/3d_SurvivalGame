@@ -292,21 +292,18 @@ MonoBehaviour:
   maxQuantityPerStack: 1
   category: 4
   categoryProperties:
-    _Buckets: ffffffffffffffffffffffff
-    _HashCodes: ffffffff0000000000000000
-    _Next: ffffffff0000000000000000
-    _Count: 1
-    _Version: 18
-    _FreeList: 0
-    _FreeCount: 1
+    _Buckets: 0000000001000000ffffffff
+    _HashCodes: b12864048bf85a0700000000
+    _Next: ffffffffffffffff00000000
+    _Count: 2
+    _Version: 27
+    _FreeList: -1
+    _FreeCount: 0
     _Keys:
+    - durability
+    - damage
     - 
-    - 
-    - 
-    _Values:
-    - 
-    - 
-    - 
+    _Values: 0a0000000400000000000000
   craftingRecipe:
     _Buckets: ffffffff0000000001000000
     _HashCodes: 37ef13604edb942200000000
@@ -320,3 +317,4 @@ MonoBehaviour:
     - stick
     - 
     _Values: 020000000100000000000000
+  itemMaterial: 2

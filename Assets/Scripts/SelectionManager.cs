@@ -112,7 +112,7 @@ public class SelectionManager : MonoBehaviour
             if (interactableObject.pickableByHand) {
                 categoryString = "hand";
             } else {
-                if (equippedItemCategory != ItemCategory.Consumable) {
+                if (equippedItemCategory == ItemCategory.Tool) {
                     if (equippedInventoryItem.categoryProperties["maxBreakableMaterial"] >= (int)interactableObject.itemMaterial) {
                         categoryString = equippedItemCategory.ToString().ToLower();
                     }

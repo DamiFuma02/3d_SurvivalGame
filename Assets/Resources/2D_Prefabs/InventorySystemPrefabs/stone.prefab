@@ -303,10 +303,7 @@ MonoBehaviour:
     - 
     - 
     - 
-    _Values:
-    - 
-    - 
-    - 
+    _Values: 000000000000000000000000
   craftingRecipe:
     _Buckets: ffffffffffffffffffffffff
     _HashCodes: 000000000000000000000000
@@ -320,3 +317,4 @@ MonoBehaviour:
     - 
     - 
     _Values: 000000000000000000000000
+  itemMaterial: 2

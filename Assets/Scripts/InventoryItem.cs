@@ -50,27 +50,14 @@ public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     public CategoryPropertiesDictionary categoryProperties = new CategoryPropertiesDictionary();
     // key: item name, value: item quantity required for crafting
     public CraftingRecipeDictionary craftingRecipe = new CraftingRecipeDictionary();
+    public ItemMaterial itemMaterial = ItemMaterial.NoMaterial; // default material
+
 
 
     GameObject hoveredItemInfoUI;
     TextMeshProUGUI hoveredItemName;
     TextMeshProUGUI hoveredItemCategory;
     TextMeshProUGUI hoveredItemCategoryProperties;
-
-
-    public InventoryItem(string name,ItemCategory itemCategory=ItemCategory.CraftingItem,int itemQuantity=1) {
-        itemName = name;
-        quantity = itemQuantity;
-        if ((int)itemCategory < 2) {
-            maxQuantityPerStack = 16;
-        } else {
-            maxQuantityPerStack = 1;
-        }
-        category = itemCategory;
-        categoryProperties = new CategoryPropertiesDictionary();
-        craftingRecipe = new CraftingRecipeDictionary();
-    }
-
 
 
     public void OnPointerEnter(PointerEventData eventData) {
@@ -137,7 +124,7 @@ public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
                 break;
             case ItemCategory.CraftingItem:
                 requiredCategoryPropertiesIDict = new Dictionary<string, int>() {
-                        { "material", (int)ItemMaterial.Stone }
+                        
                     };
                 break;
             case ItemCategory.Weapon:
