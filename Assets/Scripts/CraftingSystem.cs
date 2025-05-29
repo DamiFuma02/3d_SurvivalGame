@@ -170,6 +170,7 @@ public class CraftingSystem : MonoBehaviour
                 GameObject currCategoryButton = Instantiate(Resources.Load<GameObject>(InventorySystem.Instance.crafting2dIconsDirectory+"openCategoryCraftingMenu"), craftingMenuUI.transform);
                 currCategoryButton.transform.Translate(new Vector3(xPositionOffset[col], yPositionOffset[row], 0), Space.Self);
                 currCategoryButton.GetComponentInChildren<TextMeshProUGUI>().text = category.ToString();
+                currCategoryButton.transform.Find("ButtonIcon").GetComponent<Image>().overrideSprite = Resources.Load<Sprite>(InventorySystem.Instance.crafting2dIconsDirectory + category.ToString());
                 Button button = currCategoryButton.GetComponent<Button>();
                 int categoryIdx = (int)category; // capture the current index
                 button.onClick.AddListener(() => OpenCategoryCraftingUI(categoryIdx));
