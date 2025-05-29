@@ -486,6 +486,6 @@ public class InventorySystem : MonoBehaviour
                 equippedItemUI.GetComponent<Animator>().SetTrigger("Consume");
             }
         }
-        yield return new WaitUntil(() => !equippedItemUI.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("equippedItem_action"));
+        yield return new WaitUntil(() => equippedItemUI.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("equippedItem_idle"));
     }
 }

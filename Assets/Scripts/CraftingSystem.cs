@@ -82,11 +82,21 @@ public class CraftingSystem : MonoBehaviour
         for (int i = 0; i < categoryCount; i++) {
             currCategoryCraftingUI  = Instantiate(Resources.Load<GameObject>(InventorySystem.Instance.crafting2dIconsDirectory+"craftCategoryUi"), craftCategoriesScreenUIParent.transform);
             currCategoryCraftingUI.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "Craft " + ((ItemCategory)i).ToString();
-            AddItemsScreenUIsByCategory(currCategoryCraftingUI,(ItemCategory)i);
+            ItemCategory currCategory = (ItemCategory)i; // capture the current category index for the button listener
+            currCategoryCraftingUI.transform.GetChild(1).GetComponent<Button>().onClick.AddListener(() => CloseCategoryCraftingUI(currCategory));
+            AddItemsScreenUIsByCategory(currCategoryCraftingUI, currCategory);
             currCategoryCraftingUI.transform.SetParent(craftCategoriesScreenUIParent.transform);
             currCategoryCraftingUI.gameObject.SetActive(false);
             craftCategoryScreensArray[i] = currCategoryCraftingUI;
         }
+    }
+
+    private void CloseCategoryCraftingUI(ItemCategory currCategory) {
+        craftCategoryScreensArray[(int)currCategory].SetActive(false);
+        // disable the parent UI
+        craftCategoriesScreenUIParent.SetActive(false);
+        // enable the crafting menu UI
+        craftingMenuUI.SetActive(true);
     }
 
     /// <summary>
@@ -225,7 +235,10 @@ public class CraftingSystem : MonoBehaviour
                 }
             }
             // find the button for the current item in the category crafting UI and make it visible or invisible based on the requirements
-            currCategoryUI.transform.GetChild(i + 1).Find("CraftItemButton").gameObject.SetActive(validReqs);  // the first child is the title text, so we start from the second child
+            // the first child is the title text,
+            // the second one is the closebutton
+            // so we start from the third child
+            currCategoryUI.transform.GetChild(i + 2).Find("CraftItemButton").gameObject.SetActive(validReqs);  
         }
     }
 

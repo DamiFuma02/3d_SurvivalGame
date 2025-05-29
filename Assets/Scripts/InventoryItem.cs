@@ -77,7 +77,19 @@ public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         hoveredItemInfoUI.gameObject.SetActive(true);
         hoveredItemName.text = $"{itemName}: {quantity}";
         hoveredItemCategory.text = category.ToString();
-        hoveredItemCategoryProperties.text = categoryProperties.Count > 0 ? categoryProperties.ToString() : "No properties available";
+        // if the categoryProperties dictionary is empty, show a default message
+        if (categoryProperties == null || categoryProperties.Count == 0) {
+            hoveredItemCategoryProperties.text = "No properties available";
+        } else {
+            // convert the categoryProperties dictionary to a string
+            // format: "property1: value1, property2: value2, ..."
+            List<string> propertiesList = new List<string>();
+            foreach (var keyValuePair in categoryProperties) {
+                propertiesList.Add($"{keyValuePair.Key}: {keyValuePair.Value}");
+            }
+            string propertiesString = string.Join("\n", propertiesList);
+            hoveredItemCategoryProperties.text = propertiesString;
+        }
     }
 
     public void OnPointerExit(PointerEventData eventData) {
