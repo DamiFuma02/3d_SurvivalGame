@@ -216,9 +216,9 @@ public class InventorySystem : MonoBehaviour
             equippedItemUI.gameObject.SetActive(false);  
         }
         if (!prevEquipped && inventoryItems[playerBarSlotIdx].category != ItemCategory.CraftingItem && inventoryItems[playerBarSlotIdx].category!=ItemCategory.Armor) {
-            Instantiate(Resources.Load<GameObject>(interactableObjects3dprefabsDirectory + inventoryItems[playerBarSlotIdx].itemName+"Equipped"),
+            Instantiate(Resources.Load<GameObject>(interactableObjects3dprefabsDirectory + inventoryItems[playerBarSlotIdx].itemName),
                 equippedItemUI.transform
-            );
+            ).transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
             equippedItemFlag = true;
             equippedPlayerBarIdx = playerBarSlotIdx;
             equippedItemUI.gameObject.SetActive(true);
@@ -450,9 +450,9 @@ public class InventorySystem : MonoBehaviour
 
         if (drops.Count > 0) {
             foreach (var drop in drops) {
-                // heads or tails to decide if to add the item to the inventory or not
-                if (random.Next(0,2) == 1) {
-                    AddToInventory(drop.Key, Resources.Load<GameObject>(inventory2dIconsDirectory + drop.Key).GetComponent<InventoryItem>().category, random.Next(1, drop.Value));
+                // 3/4=0.75 drop probability
+                if (random.Next(0,4) > 0) {
+                    AddToInventory(drop.Key, Resources.Load<GameObject>(inventory2dIconsDirectory + drop.Key).GetComponent<InventoryItem>().category, random.Next(1, drop.Value+1));
                 }
             }
         } else {
@@ -472,8 +472,9 @@ public class InventorySystem : MonoBehaviour
             Debug.Log("NO Animation");
             yield return null;  // no equipped item to animate
         }
-        ItemCategory currentItemCategory = equippedItemUI.GetChild(0).GetComponent<InteractableObject>().itemCategory;
-        string triggerName = currentItemCategory == ItemCategory.Consumable ? "Hit" : "Hit";
+        
+        ItemCategory currentItemCategory = equippedItemUI.GetComponentInChildren<InteractableObject>().itemCategory;
+        string triggerName = currentItemCategory == ItemCategory.Consumable ? "Consume" : "Hit";
         equippedItemUI.GetComponent<Animator>().SetTrigger(triggerName);
         yield return new WaitUntil(() => !equippedItemUI.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("equippedItem_action"));
     }
