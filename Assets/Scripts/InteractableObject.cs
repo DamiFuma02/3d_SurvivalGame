@@ -18,11 +18,9 @@ public class InteractableObject : MonoBehaviour {
     public DropItemsDictionary drops = new DropItemsDictionary();
     public ItemMaterial itemMaterial = ItemMaterial.Wood; // default material
 
-    public int health = 10;
+    public int initialHealth = 10;
+    public int currHealth;
 
-    public string GetItemName() {
-        return ItemName;
-    }
 
     private void OnTriggerEnter(Collider collidedObject) {
         playerInRange = collidedObject.CompareTag("Player");
@@ -34,6 +32,7 @@ public class InteractableObject : MonoBehaviour {
 
 
     private void Start() {
+        currHealth = initialHealth;
         // assert that all items in the drops dictionary have a positive quantity
         if (drops.Count == 0) {
             return;   
@@ -61,7 +60,8 @@ public class InteractableObject : MonoBehaviour {
                     InventoryItem equippedInventoryItem = InventorySystem.Instance.inventoryItems[equippedPlayerBarIdx];
                     TakeDamage(equippedInventoryItem);
                 }
-                if (health<=0) {
+                PlayerDynamicBarsSystem.Instance.UpdateBarUI(BarType.Health, currHealth, initialHealth,player:false);
+                if (currHealth <= 0) {
                     InventorySystem.Instance.AddToInventoryOrDropItems(ItemName,itemCategory,drops);
                     Destroy(gameObject);
                 }
@@ -79,7 +79,7 @@ public class InteractableObject : MonoBehaviour {
                     damageBonus = 2;
                 }
                 // take damage
-                health -= equippedInventoryItem.categoryProperties["damage"] * damageBonus;
+                currHealth -= equippedInventoryItem.categoryProperties["damage"] * damageBonus;
                 // reduce the durability of the tool more if the object is not of the same breakable material type
                 equippedInventoryItem.categoryProperties["durability"] -= 2/damageBonus;
                 if (equippedInventoryItem.categoryProperties["durability"] <= 0) {
@@ -94,7 +94,7 @@ public class InteractableObject : MonoBehaviour {
         else if (equippedInventoryItem.category == ItemCategory.Weapon) {
             if (itemMaterial == ItemMaterial.NoMaterial) {
                 // take damage
-                health -= equippedInventoryItem.categoryProperties["damage"];
+                currHealth -= equippedInventoryItem.categoryProperties["damage"];
                 equippedInventoryItem.categoryProperties["durability"] -= 1;
             }
         } // else {no damage inflicted with ItemCategory.Consumable}

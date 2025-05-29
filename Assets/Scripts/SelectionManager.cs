@@ -19,6 +19,7 @@ public class SelectionManager : MonoBehaviour
     private GameObject ObjectInfoUI;   
     private GameObject ObjectLogo;   
     private GameObject ObjectName;   
+    private GameObject ObjectHealthBarCanvas;   
     Ray lightRay;
     RaycastHit hittenObj;
     Transform hittenObjectTransform;
@@ -55,6 +56,7 @@ public class SelectionManager : MonoBehaviour
 
         ObjectLogo = ObjectInfoUI.transform.Find("ObjectLogo").gameObject;
         ObjectName = ObjectInfoUI.transform.Find("ObjectName").gameObject;
+        ObjectHealthBarCanvas = ObjectInfoUI.transform.Find("ObjectHealthBarCanvas").gameObject;
     }
 
     GameObject currSprite;
@@ -66,9 +68,7 @@ public class SelectionManager : MonoBehaviour
             // check if the object hitten is an InteractableObject
             if (interactableObject && interactableObject.playerInRange && !InventorySystem.Instance.isOpen) {
                 lookingAtTarget = true;
-                ObjectName.GetComponent<TextMeshProUGUI>().text = hittenObjectTransform.GetComponent<InteractableObject>().GetItemName();
-                currSprite = Resources.Load<GameObject>(InventorySystem.Instance.inventory2dIconsDirectory + hittenObjectTransform.GetComponent<InteractableObject>().GetItemName());
-                ObjectLogo.GetComponent<Image>().overrideSprite = currSprite.transform.Find("ItemImage").gameObject.GetComponent<Image>().sprite; 
+                UpdateCurrentObjectInfoUI(interactableObject);
                 ObjectInfoUI.SetActive(true);
                 selectedObject = interactableObject.gameObject;
                 ShowPointer(interactableObject);
@@ -87,6 +87,20 @@ public class SelectionManager : MonoBehaviour
             CustomPointer.SetActive(false);
             lookingAtTarget = false;
         }
+    }
+
+    private void UpdateCurrentObjectInfoUI(InteractableObject currentInteractableObject) {
+        ObjectName.GetComponent<TextMeshProUGUI>().text = currentInteractableObject.ItemName;
+        currSprite = Resources.Load<GameObject>(InventorySystem.Instance.inventory2dIconsDirectory + currentInteractableObject.ItemName);
+        ObjectLogo.GetComponent<Image>().overrideSprite = currSprite.transform.Find("ItemImage").gameObject.GetComponent<Image>().sprite;
+        // if the interactableObject isn't pickable by hand, show the healthbar
+        if (!currentInteractableObject.pickableByHand) {
+            ObjectHealthBarCanvas.gameObject.SetActive(true);
+            PlayerDynamicBarsSystem.Instance.UpdateBarUI(BarType.Health, currentInteractableObject.currHealth, currentInteractableObject.initialHealth, player: false);
+        } else {
+            ObjectHealthBarCanvas.gameObject.SetActive(false);
+        }
+
     }
 
     private void ShowPointer(InteractableObject interactableObject) {

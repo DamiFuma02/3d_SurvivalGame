@@ -165,10 +165,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b58da898c907b54cb42df2941d9c944, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ItemName: branch
+  ItemName: stick
   itemCategory: 0
   playerInRange: 0
-  pickableByHand: 0
+  pickableByHand: 1
   drops:
     _Buckets: ffffffffffffffff00000000
     _HashCodes: 4edb94220000000000000000
@@ -183,4 +183,5 @@ MonoBehaviour:
     - 
     _Values: 030000000000000000000000
   itemMaterial: 1
-  health: 10
+  initialHealth: 10
+  currHealth: 0

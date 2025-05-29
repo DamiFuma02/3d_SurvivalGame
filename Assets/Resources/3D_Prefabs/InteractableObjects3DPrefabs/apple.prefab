@@ -160,7 +160,7 @@ MonoBehaviour:
     - 
     _Values: 000000000000000000000000
   itemMaterial: 0
-  health: 10
+  initialHealth: 10
 --- !u!1 &2654370316054857242
 GameObject:
   m_ObjectHideFlags: 0

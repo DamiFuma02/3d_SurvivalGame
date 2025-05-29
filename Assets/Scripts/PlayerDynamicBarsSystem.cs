@@ -6,6 +6,11 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+
+public enum BarType {
+    Health, Food, Water
+}
+
 public class PlayerDynamicBarsSystem : MonoBehaviour
 {
 
@@ -20,17 +25,32 @@ public class PlayerDynamicBarsSystem : MonoBehaviour
         }
     }
 
-    private enum BarType {
-        Health,Food,Water
-    }
-    public int[] maxValues = { 1000,1000,1000 };
-    public int[] currValues = { 1000, 1000, 1000 };
-    public bool isDead;
+    
+    public Dictionary<BarType, int> playerMaxValues = new Dictionary<BarType, int> {
+        { BarType.Health, 1000 },
+        { BarType.Food, 1000 },
+        { BarType.Water, 1000 }
+    };
+    public Dictionary<BarType, int> playerCurrValues = new Dictionary<BarType, int> {
+        { BarType.Health, 1000 },
+        { BarType.Food, 1000 },
+        { BarType.Water, 1000 }
+    };
+    public bool isPlayerDead;
 
-    public GameObject dynamicBarsUI;
-    List<Slider> dynamicBarsSliders = new List<Slider>();
-    List<Image> dynamicBarsImg = new List<Image>();
-    List<TextMeshProUGUI> dynamicBarsStatus = new List<TextMeshProUGUI>();
+    public GameObject playerDynamicBarsUI;
+    private Dictionary<string,List<object>> playerDynamicBarsUIComponents = new Dictionary<string, List<object>> {
+        { "Slider", new List<object>() },
+        { "Image", new List<object>() },
+        { "Text", new List<object>() }
+    };
+
+    public GameObject lookingObjectDynamicBarUICanvas;
+    private Dictionary<string, object> lookingObjectDynamicBarUIComponents = new Dictionary<string, object> {
+        { "Slider", null },
+        { "Image", null },
+        { "Text", null }
+    };
 
     List<Color32[]> dynamicBarsColors = new List<Color32[]> {
         //              maxColor,                           mediumColor,                     lowColor
@@ -40,24 +60,30 @@ public class PlayerDynamicBarsSystem : MonoBehaviour
     };
 
 
-
-    List<Coroutine> coroutines = new List<Coroutine>();
-
     // Start is called before the first frame update
     void Start() {
         GetDynamicBarsComponents();
-        UpdateBarsUI();
+        UpdatePlayerBarsUI();
     }
 
     private void GetDynamicBarsComponents() {
-        foreach (Transform child in dynamicBarsUI.transform) {
+        foreach (Transform child in playerDynamicBarsUI.transform) {
             if (child.gameObject.CompareTag("DynamicBar")) {
-                dynamicBarsSliders.Add(child.GetComponent<Slider>());
-                dynamicBarsImg.Add(child.Find("ColorBar").gameObject.GetComponent<Image>());
-                dynamicBarsStatus.Add(child.Find("BarValues").gameObject.GetComponent<TextMeshProUGUI>());
+                playerDynamicBarsUIComponents["Slider"].Add(child.GetComponent<Slider>());
+                playerDynamicBarsUIComponents["Image"].Add(child.Find("ColorBar").gameObject.GetComponent<Image>());
+                playerDynamicBarsUIComponents["Text"].Add(child.Find("BarValues").gameObject.GetComponent<TextMeshProUGUI>());
             }
         }
-        Assert.AreEqual(dynamicBarsSliders.Count, Enum.GetValues(typeof(BarType)).Length, $"The number of bars {dynamicBarsSliders.Count} must be equal to the number of bar types {string.Join(", ", Enum.GetNames(typeof(BarType)))}");
+        
+        lookingObjectDynamicBarUIComponents["Slider"] = lookingObjectDynamicBarUICanvas.GetComponent<Slider>();
+        lookingObjectDynamicBarUIComponents["Image"] = lookingObjectDynamicBarUICanvas.transform.Find("ColorBar").gameObject.GetComponent<Image>();
+        lookingObjectDynamicBarUIComponents["Text"] = lookingObjectDynamicBarUICanvas.transform.Find("BarValues").gameObject.GetComponent<TextMeshProUGUI>();
+
+        Assert.AreEqual(playerDynamicBarsUIComponents["Slider"].Count,
+            Enum.GetValues(typeof(BarType)).Length,
+            $"The number of bars {playerDynamicBarsUIComponents["Slider"].Count} must be equal to the number of bar types {string.Join(", ", Enum.GetNames(typeof(BarType)))}"
+        );
+
     }
 
     
@@ -71,27 +97,41 @@ public class PlayerDynamicBarsSystem : MonoBehaviour
 
 
 
-    public void UpdateBarsUI() {
+    public void UpdatePlayerBarsUI() {
         foreach (BarType barType in Enum.GetValues(typeof(BarType))) {
-            UpdateBarUI(barType);
+            UpdateBarUI(barType, playerCurrValues[barType], playerMaxValues[barType], player:true );
         }
     }
 
     
 
-    void UpdateBarUI(BarType barType) {
-        dynamicBarsSliders[(int)barType].value = (float)currValues[(int)barType]/ maxValues[(int)barType];
-        dynamicBarsStatus[(int)barType].text = $"{currValues[(int)barType]}/{maxValues[(int)barType]}";
+    public void UpdateBarUI(BarType barType, int currValue, int maxValue, bool player=true) {
+        Slider currSlider;
+        Image currImage;
+        TextMeshProUGUI currText;
+
+        if (player) {
+            currSlider = (Slider)playerDynamicBarsUIComponents["Slider"][(int)barType];
+            currImage = (Image)playerDynamicBarsUIComponents["Image"][(int)barType];
+            currText = (TextMeshProUGUI)playerDynamicBarsUIComponents["Text"][(int)barType];
+        } else {
+            currSlider = (Slider)lookingObjectDynamicBarUIComponents["Slider"];
+            currImage = (Image)lookingObjectDynamicBarUIComponents["Image"];
+            currText = (TextMeshProUGUI)lookingObjectDynamicBarUIComponents["Text"];
+        }
+        currSlider.value = (float)currValue / maxValue;
+        currText.text = $"{currValue}/{maxValue}";
+
         int numberOfColors = dynamicBarsColors[(int)barType].Length;
         if (numberOfColors == 1) {
-            dynamicBarsImg[(int)barType].color = dynamicBarsColors[(int)barType][0];
+            currImage.color = dynamicBarsColors[(int)barType][0];
         }
         else {
             // divide the range values from 0 to maxValue into numberOfColors equal parts
-            float range = maxValues[(int)barType] / numberOfColors;
+            float range = maxValue / numberOfColors;
             for (int i = 0; i < numberOfColors; i++) {
-                if (currValues[(int)barType] >= range * (numberOfColors - i-1)) {
-                    dynamicBarsImg[(int)barType].color = dynamicBarsColors[(int)barType][i];
+                if (currValue >= range * (numberOfColors - i-1)) {
+                    currImage.color = dynamicBarsColors[(int)barType][i];
                     break;
                 }
             }

@@ -145,7 +145,7 @@ MonoBehaviour:
   ItemName: tree
   itemCategory: 0
   playerInRange: 0
-  pickable: 1
+  pickableByHand: 0
   drops:
     _Buckets: ffffffff0000000001000000
     _HashCodes: 6ef814464edb942200000000
@@ -159,7 +159,9 @@ MonoBehaviour:
     - stick
     - 
     _Values: 020000000300000000000000
-  health: 10
+  itemMaterial: 1
+  initialHealth: 10
+  currHealth: 0
 --- !u!1 &3021209909682605940
 GameObject:
   m_ObjectHideFlags: 0
