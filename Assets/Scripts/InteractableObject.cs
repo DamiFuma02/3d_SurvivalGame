@@ -12,8 +12,11 @@ public class InteractableObject : MonoBehaviour {
     public string ItemName;
     public ItemCategory itemCategory;
     public bool playerInRange;
-    public bool pickable = true;
+    // if true, the object can be picked up by hand otherwise it can only be broken with a tool
+    //  with the brakeableMaterial property matching the current itemMaterial
+    public bool pickableByHand = true;
     public DropItemsDictionary drops = new DropItemsDictionary();
+    public ItemMaterial itemMaterial = ItemMaterial.Wood; // default material
 
     public int health = 10;
 
@@ -43,35 +46,57 @@ public class InteractableObject : MonoBehaviour {
 
     private void Update() {
         // pickup an object with left click
-        if (!InventorySystem.Instance.isOpen && playerInRange && Input.GetKeyDown(KeyCode.Mouse0) && SelectionManager.instance.lookingAtTarget && SelectionManager.instance.selectedObject == gameObject) {
-            
-            if (pickable) {
-                if (InventorySystem.Instance.equippedItemFlag) {
-                    Debug.Log("Start Coroutine");
-                    StartCoroutine(InventorySystem.Instance.AnimateEquippedItem());
-                }
-                InventorySystem.Instance.AddToInventoryOrDropItems(ItemName,itemCategory,drops);
+        if (playerInRange && !InventorySystem.Instance.isOpen &&  Input.GetKeyDown(KeyCode.Mouse0) && SelectionManager.instance.lookingAtTarget && SelectionManager.instance.selectedObject == gameObject) {
+            if (InventorySystem.Instance.equippedItemFlag) {
+                Debug.Log("Start Coroutine");
+                StartCoroutine(InventorySystem.Instance.AnimateEquippedItem(KeyCode.Mouse0));
+            }
+            if (pickableByHand) {
+                InventorySystem.Instance.AddToInventoryOrDropItems(ItemName, itemCategory, drops);
                 Destroy(gameObject);
             } else {
-                health--;
+                // if the object is not pickable by hand, it can be damaged and finally broken with a tool or weapon
+                if (InventorySystem.Instance.equippedItemFlag) {
+                    int equippedPlayerBarIdx = InventorySystem.Instance.equippedPlayerBarIdx;
+                    InventoryItem equippedInventoryItem = InventorySystem.Instance.inventoryItems[equippedPlayerBarIdx];
+                    TakeDamage(equippedInventoryItem);
+                }
                 if (health<=0) {
                     InventorySystem.Instance.AddToInventoryOrDropItems(ItemName,itemCategory,drops);
                     Destroy(gameObject);
-
                 }
             }
         }
-        //if (health <= 0) {
-        //    // drop the objects on the ground as 3d objects
-        //    foreach (var drop in drops) {
-        //        for (int i = 0; i < drop.Item2; i++) {
-        //            GameObject droppedItem = Instantiate(Resources.Load<GameObject>(drop.Item1), 
-        //                transform.position,  // current gameObject position
-        //                Quaternion.identity);  
-        //        }
-        //    }
-        //    Destroy(gameObject);
-        //}
     }
 
+    private void TakeDamage(InventoryItem equippedInventoryItem) {
+        int damageBonus = 1; // default damage bonus
+        if (equippedInventoryItem.category == ItemCategory.Tool) {
+            // check if the equipped tool can break the current object
+            if (equippedInventoryItem.categoryProperties["maxBreakableMaterial"] >= (int)itemMaterial) {
+                // STAB: Same Type Attack Bonus
+                if (equippedInventoryItem.categoryProperties["maxBreakableMaterial"] == (int)itemMaterial) {
+                    damageBonus = 2;
+                }
+                // take damage
+                health -= equippedInventoryItem.categoryProperties["damage"] * damageBonus;
+                // reduce the durability of the tool more if the object is not of the same breakable material type
+                equippedInventoryItem.categoryProperties["durability"] -= 2/damageBonus;
+                if (equippedInventoryItem.categoryProperties["durability"] <= 0) {
+                    // remove the tool from the inventory
+                    InventorySystem.Instance.RemoveFromInventory(equippedInventoryItem.itemName, 1);
+                }
+            }
+            else {
+                Debug.Log("The equipped tool cannot break this object.");
+            }
+        }
+        else if (equippedInventoryItem.category == ItemCategory.Weapon) {
+            if (itemMaterial == ItemMaterial.NoMaterial) {
+                // take damage
+                health -= equippedInventoryItem.categoryProperties["damage"];
+                equippedInventoryItem.categoryProperties["durability"] -= 1;
+            }
+        } // else {no damage inflicted with ItemCategory.Consumable}
+    }
 }

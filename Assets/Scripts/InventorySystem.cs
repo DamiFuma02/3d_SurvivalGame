@@ -43,7 +43,7 @@ public class InventorySystem : MonoBehaviour
     public bool isOpen = false;
     public bool isFull = false;
     public bool equippedItemFlag;
-    private int equippedPlayerBarIdx;
+    public int equippedPlayerBarIdx;
     private Transform firstPersonCamera;
     private Transform equippedItemUI;
     private System.Random random;
@@ -160,7 +160,7 @@ public class InventorySystem : MonoBehaviour
             equippedItemUI = firstPersonCamera.transform.Find("EquippedItemUI");
             // get the InteractableObject component of the equipped item
             if (inventoryItems[equippedPlayerBarIdx].category == ItemCategory.Consumable) {
-                StartCoroutine(AnimateEquippedItem());
+                StartCoroutine(AnimateEquippedItem(KeyCode.Mouse1));
                 // consume 1 item and 
                 PlayerDynamicBarsSystem.Instance.ConsumeItem(inventoryItems[equippedPlayerBarIdx]);
                 RemoveFromInventory(inventoryItems[equippedPlayerBarIdx].itemName, 1);
@@ -451,9 +451,10 @@ public class InventorySystem : MonoBehaviour
         if (drops.Count > 0) {
             foreach (var drop in drops) {
                 // 3/4=0.75 drop probability
-                if (random.Next(0,4) > 0) {
-                    AddToInventory(drop.Key, Resources.Load<GameObject>(inventory2dIconsDirectory + drop.Key).GetComponent<InventoryItem>().category, random.Next(1, drop.Value+1));
-                }
+                //if (random.Next(0,4) > 0) {
+                //    AddToInventory(drop.Key, Resources.Load<GameObject>(inventory2dIconsDirectory + drop.Key).GetComponent<InventoryItem>().category, random.Next(1, drop.Value+1));
+                //}
+                AddToInventory(drop.Key, Resources.Load<GameObject>(inventory2dIconsDirectory + drop.Key).GetComponent<InventoryItem>().category, drop.Value);
             }
         } else {
             // if no drops are specified, just add the item to the inventory
@@ -464,7 +465,7 @@ public class InventorySystem : MonoBehaviour
     /// <summary>
     /// The equipped item cannot have category=ItemCategory.CraftingItem and ItemCategory.Armor
     /// </summary>
-    public IEnumerator AnimateEquippedItem() {
+    public IEnumerator AnimateEquippedItem(KeyCode keyCode) {
         firstPersonCamera = PlayerMovement.instance.firstPersonCamera;
         equippedItemUI = firstPersonCamera.Find("EquippedItemUI");
 
@@ -474,8 +475,17 @@ public class InventorySystem : MonoBehaviour
         }
         
         ItemCategory currentItemCategory = equippedItemUI.GetComponentInChildren<InteractableObject>().itemCategory;
-        string triggerName = currentItemCategory == ItemCategory.Consumable ? "Consume" : "Hit";
-        equippedItemUI.GetComponent<Animator>().SetTrigger(triggerName);
+        
+        if (keyCode == KeyCode.Mouse0) {
+            if (currentItemCategory != ItemCategory.Consumable) {
+                equippedItemUI.GetComponent<Animator>().SetTrigger("Hit");
+            }
+        }
+        else if (keyCode == KeyCode.Mouse1) {
+            if (currentItemCategory == ItemCategory.Consumable) {
+                equippedItemUI.GetComponent<Animator>().SetTrigger("Consume");
+            }
+        }
         yield return new WaitUntil(() => !equippedItemUI.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("equippedItem_action"));
     }
 }

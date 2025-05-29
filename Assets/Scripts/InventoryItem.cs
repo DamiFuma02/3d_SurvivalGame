@@ -22,12 +22,17 @@ public class CategoryPropertiesDictionary : SerializableDictionary<string, int> 
 }
 [Serializable] public class CraftingRecipeDictionary: SerializableDictionary<string, int> { }
 
+
+
+
+
+
 public enum ItemCategory {
     CraftingItem, Consumable, Armor, Tool, Weapon
 }
 
 public enum ItemMaterial {
-    Wood,Stone
+    NoMaterial,Wood,Stone
 }
 
 public enum ArmorType {
@@ -113,13 +118,20 @@ public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
                 break;
             case ItemCategory.Tool:
                 requiredCategoryPropertiesIDict = new Dictionary<string, int>() {
-                        { "breakableMaterial", (int)ItemMaterial.Stone },
+                        { "maxBreakableMaterial", (int)ItemMaterial.Stone },
                         { "durability", 0 },
+                        { "damage", 0 },
                     };
                 break;
             case ItemCategory.CraftingItem:
                 requiredCategoryPropertiesIDict = new Dictionary<string, int>() {
                         { "material", (int)ItemMaterial.Stone }
+                    };
+                break;
+            case ItemCategory.Weapon:
+                requiredCategoryPropertiesIDict = new Dictionary<string, int>() {
+                        { "durability", 0 },
+                        { "damage", 0 },
                     };
                 break;
             default:

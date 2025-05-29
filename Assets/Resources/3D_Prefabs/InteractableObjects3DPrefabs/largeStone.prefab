@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 2178501051994542773}
   - component: {fileID: -4516113107225220730}
   m_Layer: 0
-  m_Name: stone
+  m_Name: largeStone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -31,8 +31,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 3, y: 3, z: 3}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -125,20 +125,20 @@ MonoBehaviour:
   ItemName: stone
   itemCategory: 0
   playerInRange: 0
-  pickableByHand: 1
+  pickableByHand: 0
   drops:
-    _Buckets: ffffffffffffffffffffffff
-    _HashCodes: 000000000000000000000000
-    _Next: 000000000000000000000000
-    _Count: 0
-    _Version: 0
+    _Buckets: ffffffff00000000ffffffff
+    _HashCodes: 37ef13600000000000000000
+    _Next: ffffffff0000000000000000
+    _Count: 1
+    _Version: 12
     _FreeList: -1
     _FreeCount: 0
     _Keys:
+    - stone
     - 
     - 
-    - 
-    _Values: 000000000000000000000000
+    _Values: 040000000000000000000000
   itemMaterial: 2
   health: 10
 --- !u!65 &-4516113107225220730
@@ -160,5 +160,5 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 6, y: 10, z: 6}
-  m_Center: {x: -0.01697725, y: 4.57, z: 0.004005462}
+  m_Size: {x: 2, y: 2, z: 2}
+  m_Center: {x: 0, y: 0, z: 0}

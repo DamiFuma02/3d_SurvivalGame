@@ -940,7 +940,21 @@ MonoBehaviour:
   ItemName: Big Rabbit
   itemCategory: 1
   playerInRange: 0
-  pickable: 0
+  pickableByHand: 0
+  drops:
+    _Buckets: ffffffffffffffffffffffff
+    _HashCodes: 000000000000000000000000
+    _Next: 000000000000000000000000
+    _Count: 0
+    _Version: 0
+    _FreeList: -1
+    _FreeCount: 0
+    _Keys:
+    - 
+    - 
+    - 
+    _Values: 000000000000000000000000
+  itemMaterial: 0
   health: 3
 --- !u!65 &5243491783357451580
 BoxCollider:

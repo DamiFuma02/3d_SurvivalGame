@@ -47,9 +47,6 @@ public class PlayerDynamicBarsSystem : MonoBehaviour
     void Start() {
         GetDynamicBarsComponents();
         UpdateBarsUI();
-        coroutines.Add(StartCoroutine(TakeDamage()));
-        coroutines.Add(StartCoroutine(DecreaseWaterBar())) ;
-        coroutines.Add(StartCoroutine(DecreaseFoodBar()));
     }
 
     private void GetDynamicBarsComponents() {
@@ -63,27 +60,8 @@ public class PlayerDynamicBarsSystem : MonoBehaviour
         Assert.AreEqual(dynamicBarsSliders.Count, Enum.GetValues(typeof(BarType)).Length, $"The number of bars {dynamicBarsSliders.Count} must be equal to the number of bar types {string.Join(", ", Enum.GetNames(typeof(BarType)))}");
     }
 
-    private IEnumerator DecreaseWaterBar() {
-        yield return null;
-
-    }
-
-    private IEnumerator DecreaseFoodBar() {
-        yield return null;
-
-    }
-    private IEnumerator TakeDamage() {
-        currValues[(int)BarType.Health] -= 100;
-        UpdateBarUI(BarType.Health);
-        if (currValues[(int)BarType.Health] <= 0) {
-            StopCoroutine(coroutines[0]);
-            yield return null;
-        }
-        else {
-            yield return new WaitForSeconds(2f);
-            coroutines[0] = StartCoroutine(TakeDamage());
-        }
-    }
+    
+    
 
     public void ConsumeItem(InventoryItem inventoryItem) {
         if (inventoryItem.categoryProperties == null && inventoryItem.categoryProperties.Count == 0) {
