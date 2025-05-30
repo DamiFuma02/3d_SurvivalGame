@@ -215,8 +215,12 @@ public class InventorySystem : MonoBehaviour
             equippedPlayerBarIdx = -1;
             equippedItemUI.gameObject.SetActive(false);  
         }
+        // todo: can equip any item and handle each category differently
         if (!prevEquipped && inventoryItems[playerBarSlotIdx].category != ItemCategory.CraftingItem && inventoryItems[playerBarSlotIdx].category!=ItemCategory.Armor) {
-            string materialString = inventoryItems[playerBarSlotIdx].itemMaterial.ToString().ToLower();
+            string materialString = "";
+            if (inventoryItems[playerBarSlotIdx].category == ItemCategory.Tool || inventoryItems[playerBarSlotIdx].category == ItemCategory.Weapon) {
+                materialString = inventoryItems[playerBarSlotIdx].itemMaterial.ToString().ToLower();
+            }            
             Instantiate(Resources.Load<GameObject>(interactableObjects3dprefabsDirectory + materialString + inventoryItems[playerBarSlotIdx].itemName),
                 equippedItemUI.transform
             ).transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);

@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5534657953996380793}
   m_Layer: 0
-  m_Name: pickaxe
+  m_Name: stonepickaxe
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -179,7 +179,7 @@ MonoBehaviour:
   ItemName: pickaxe
   itemCategory: 3
   playerInRange: 0
-  pickable: 1
+  pickableByHand: 1
   drops:
     _Buckets: ffffffffffffffffffffffff
     _HashCodes: 000000000000000000000000
@@ -193,4 +193,6 @@ MonoBehaviour:
     - 
     - 
     _Values: 000000000000000000000000
-  health: 10
+  itemMaterial: 2
+  initialHealth: 10
+  currHealth: 0
