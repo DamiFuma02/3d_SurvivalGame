@@ -269,10 +269,12 @@ public class InventorySystem : MonoBehaviour
         }
         for (int i = 0; i < playerBarSlotsArray.Length; i++) {
             if (inventorySlotsArray[i].transform.childCount > 0) {
+                // update the player bar slot with the item in the inventory slot
                 if (playerBarSlotsArray[i].transform.childCount > 1) {
                     playerBarSlotsArray[i].transform.GetChild(1).GetComponent<InventoryItem>().quantity = inventorySlotsArray[i].transform.GetChild(0).GetComponent<InventoryItem>().quantity;
                     playerBarSlotsArray[i].transform.GetChild(1).Find("ItemProperties").GetComponent<TextMeshProUGUI>().text = inventorySlotsArray[i].transform.GetChild(0).Find("ItemProperties").GetComponent<TextMeshProUGUI>().text;
-                } else { 
+                } else {
+                    // if the player bar slot is empty, instantiate the item from the inventory slot
                     Instantiate(inventorySlotsArray[i].transform.GetChild(0).gameObject,
                         playerBarSlotsArray[i].transform.position,
                         playerBarSlotsArray[i].transform.rotation
@@ -282,6 +284,10 @@ public class InventorySystem : MonoBehaviour
                 // it means that item has been removed from the inventory
             } else if (playerBarSlotsArray[i].transform.childCount > 1) {
                 DestroyImmediate(playerBarSlotsArray[i].transform.GetChild(1).gameObject);
+            }
+            // check if the equipped item is in the player bar and update its UI accordingly
+            if (equippedItemFlag && i == equippedPlayerBarIdx && playerBarSlotsArray[i].transform.childCount == 1) {
+                ToggleEquippedItem(i, true); // hide the equipped item UI
             }
         }
 
@@ -482,13 +488,13 @@ public class InventorySystem : MonoBehaviour
         ItemCategory currentItemCategory = equippedItemUI.GetComponentInChildren<InteractableObject>().itemCategory;
         
         if (keyCode == KeyCode.Mouse0) {
-            if (currentItemCategory != ItemCategory.Consumable) {
-                equippedItemUI.GetComponent<Animator>().SetTrigger("Hit");
+            if (currentItemCategory == ItemCategory.Tool || currentItemCategory == ItemCategory.Weapon) {
+                equippedItemUI.GetComponent<Animator>().SetTrigger("LeftClick");
             }
         }
         else if (keyCode == KeyCode.Mouse1) {
             if (currentItemCategory == ItemCategory.Consumable) {
-                equippedItemUI.GetComponent<Animator>().SetTrigger("Consume");
+                equippedItemUI.GetComponent<Animator>().SetTrigger("RightClick");
             }
         }
         yield return new WaitUntil(() => equippedItemUI.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("equippedItem_idle"));
