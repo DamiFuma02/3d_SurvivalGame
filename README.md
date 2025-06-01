@@ -146,3 +146,46 @@
 * Add isTool property for each InventoryItem 
     * make it unstackable
     * make it usable by the player pressing F
+
+11. Equipping Items
+
+> Some InventoryItems can be equipped by the player, like tools or weapons pressing the number keys on the keyboard to equipe the item from the playerBar
+
+
+* Add animation for the equipped item:
+    * idle: in loop 
+    * leftclick: if the item is a tool or weapon, play this animation
+    * rightclick: if the items is Consumable play this animation
+* For now only Tool, Weapon and Consumable items can be equipped
+
+
+> For each ItemCategory exists a field categoryProperties Dictionary<string,int> that must be assigned to each InventoryItem and changed via inspector UI in unity using SerializableDictionary and Editor/DictionaryDrawer custom scripts
+
+
+
+> The leftclick action can be used by:
+* Tools: to interact with the environment (e.g. mining, cutting trees and damaging enemies)
+```csharp
+Dictionary<string, int>() {
+                    { "maxBreakableMaterial", (int)ItemMaterial.Stone },
+                    { "durability", 0 },
+                    { "damage", 0 },
+                };
+```
+* Weapons: to attack and damage enemies
+```csharp
+Dictionary<string, int>() {
+                        { "durability", 0 },
+                        { "damage", 0 },
+                    };
+```
+> The rightclick action can be used by:
+* Consumables: to heal the player or restore stamina using the PlayerDinamicBarsSystem script
+
+```csharp
+Dictionary<string, int>() {
+                        { "health", 0 },
+                        { "food", 0 },
+                        { "water", 0 }
+                    };
+```

@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Text.Json;
+using NUnit.Framework;
 
 
 [Serializable]
@@ -159,5 +160,14 @@ public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     void Update()
     {
         
+    }
+
+    public void DecreaseDurability(int v) {
+        Assert.IsTrue(category == ItemCategory.Tool || category == ItemCategory.Weapon, "Durability can only be decreased for tools or weapons.");
+        categoryProperties["durability"] -= 2 / v;
+        if (categoryProperties["durability"] <= 0) {
+            // remove the tool from the inventory
+            InventorySystem.Instance.RemoveFromInventory(itemName, 1);
+        }
     }
 }

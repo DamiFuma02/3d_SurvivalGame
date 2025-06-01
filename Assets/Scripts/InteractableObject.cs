@@ -69,6 +69,11 @@ public class InteractableObject : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Take damage from the equipped inventory item.
+    /// Decrease also the durability of the equipped tool or weapon.
+    /// </summary>
+    /// <param name="equippedInventoryItem"></param>
     private void TakeDamage(InventoryItem equippedInventoryItem) {
         int damageBonus = 1; // default damage bonus
         if (equippedInventoryItem.category == ItemCategory.Tool) {
@@ -81,11 +86,8 @@ public class InteractableObject : MonoBehaviour {
                 // take damage
                 currHealth -= equippedInventoryItem.categoryProperties["damage"] * damageBonus;
                 // reduce the durability of the tool more if the object is not of the same breakable material type
-                equippedInventoryItem.categoryProperties["durability"] -= 2/damageBonus;
-                if (equippedInventoryItem.categoryProperties["durability"] <= 0) {
-                    // remove the tool from the inventory
-                    InventorySystem.Instance.RemoveFromInventory(equippedInventoryItem.itemName, 1);
-                }
+                equippedInventoryItem.DecreaseDurability(2 / damageBonus);
+                
             }
             else {
                 Debug.Log("The equipped tool cannot break this object.");

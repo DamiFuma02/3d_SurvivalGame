@@ -285,7 +285,7 @@ public class InventorySystem : MonoBehaviour
             } else if (playerBarSlotsArray[i].transform.childCount > 1) {
                 DestroyImmediate(playerBarSlotsArray[i].transform.GetChild(1).gameObject);
             }
-            // check if the equipped item is in the player bar and update its UI accordingly
+            // check if the equipped item is no more in the player bar because it has been (destroyed) removed from the inventory 
             if (equippedItemFlag && i == equippedPlayerBarIdx && playerBarSlotsArray[i].transform.childCount == 1) {
                 ToggleEquippedItem(i, true); // hide the equipped item UI
             }
