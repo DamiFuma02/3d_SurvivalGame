@@ -66,7 +66,7 @@ public class SelectionManager : MonoBehaviour
             hittenObjectTransform = hittenObj.transform;
             interactableObject = hittenObjectTransform.GetComponent<InteractableObject>();
             // check if the object hitten is an InteractableObject
-            if (interactableObject && interactableObject.playerInRange && !InventorySystem.Instance.isOpen) {
+            if (interactableObject && interactableObject.playerInRange && !InventorySystem.Instance.isOpen && !MenuManager.Instance.isMenuOpen) {
                 lookingAtTarget = true;
                 UpdateCurrentObjectInfoUI(interactableObject);
                 ObjectInfoUI.SetActive(true);

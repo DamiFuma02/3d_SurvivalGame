@@ -189,3 +189,20 @@ Dictionary<string, int>() {
                         { "water", 0 }
                     };
 ```
+
+## 12: Main Menu System
+
+* Create a new Scene MainMenuScene, that contains:
+    * NewGameButton
+    * LoadGameButton
+    * SettingsButton
+    * ExitButton
+
+> Create a MainMenuManager script attached to the Canvas object to handle the buttons
+
+> Duplicate the canvas and add it to the game scene
+
+* Delete the NewGameButton and replace the LoadGameButton with SaveGameButton
+* The manager script has to handle the menu from both the scenes.
+
+> Inside the selectionmanager check if the menu is open to disable the selection

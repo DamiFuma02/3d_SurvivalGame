@@ -38,6 +38,8 @@ public class InventorySystem : MonoBehaviour
     // to the first slots of the inventory screen UI
     public GameObject[] playerBarSlotsArray;
 
+    public GameObject mainMenuCanvas;
+    public GameObject playerUICanvas;
     
     
     public bool isOpen = false;
@@ -143,6 +145,21 @@ public class InventorySystem : MonoBehaviour
     void Update() {
         ToggleInventory();
         CheckPlayerKeyPress();
+        ToggleGameMenuOpen();
+    }
+
+    private void ToggleGameMenuOpen() {
+        if (Input.GetKeyDown(KeyCode.M) || Input.GetKeyDown(KeyCode.Escape)) {
+            if (MenuManager.Instance.isMenuOpen) {
+                mainMenuCanvas.SetActive(false);
+                playerUICanvas.SetActive(true);
+            }
+            else {
+                mainMenuCanvas.SetActive(true);
+                playerUICanvas.SetActive(false);
+            }
+            MenuManager.Instance.isMenuOpen = !MenuManager.Instance.isMenuOpen;
+        }
     }
 
     /// <summary>
@@ -150,12 +167,12 @@ public class InventorySystem : MonoBehaviour
     /// or the right mouse button to consume an ItemCategory.Consumable item equipped from the the player bar.
     /// </summary>
     private void CheckPlayerKeyPress() {
-        int startNumber = (int)KeyCode.Alpha0;  
-        for (int i = (int)KeyCode.Alpha0; i <= (int)KeyCode.Alpha9; i++) {
-            if (Input.GetKeyDown((KeyCode)i)) {
-                SelectItemInPlayerBar(i-startNumber-1);
-            }
-        }
+        CheckNumberKeysPress();
+        CheckRightClickAction();
+
+    }
+
+    private void CheckRightClickAction() {
         if (equippedItemFlag && Input.GetKeyDown(KeyCode.Mouse1)) {
             equippedItemUI = firstPersonCamera.transform.Find("EquippedItemUI");
             // get the InteractableObject component of the equipped item
@@ -175,6 +192,16 @@ public class InventorySystem : MonoBehaviour
             }
             else {
                 Debug.LogWarning("Cannot consume an item that is not a Consumable type");
+            }
+        }
+
+    }
+
+    private void CheckNumberKeysPress() {
+        int startNumber = (int)KeyCode.Alpha0;
+        for (int i = (int)KeyCode.Alpha0; i <= (int)KeyCode.Alpha9; i++) {
+            if (Input.GetKeyDown((KeyCode)i)) {
+                SelectItemInPlayerBar(i - startNumber - 1);
             }
         }
     }
