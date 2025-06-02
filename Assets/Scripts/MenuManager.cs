@@ -89,6 +89,9 @@ public class MenuManager : MonoBehaviour
             SceneManager.LoadScene(mainMenuSceneName);
         } else {
             Application.Quit();
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#endif
         }
     }
 }
