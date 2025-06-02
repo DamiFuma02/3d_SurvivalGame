@@ -17,14 +17,16 @@ public class MenuManager : MonoBehaviour
             Instance = this;
         }
     }
+
+
+
     // common components
-    private GameObject settingsButton;
-    private GameObject exitGameButton;
+    private GameObject mainMenuUI;
+    private GameObject settingsMenuUI;
     // main menu components
-    private GameObject newGameButton;
+    private GameObject loadGameMenuUI;
     // game menu components
-    private GameObject loadGameButton;
-    private GameObject saveGameButton;
+    private GameObject saveGameMenuUI;
     
     bool gameLoaded;
     private string mainMenuSceneName = "MainMenuScene";
@@ -35,24 +37,46 @@ public class MenuManager : MonoBehaviour
     void Start()
     {
         gameLoaded = SceneManager.GetActiveScene().name == gameSceneName;
+        GetAllMenuUIs();
         GetAllButtons();
     }
 
-    private void GetAllButtons() {
-        settingsButton = gameObject.transform.Find("SettingsButton").gameObject;
-        settingsButton.GetComponent<Button>().onClick.AddListener(OnSettingsButtonClicked);
-        exitGameButton = gameObject.transform.Find("ExitButton").gameObject;
-        exitGameButton.GetComponent<Button>().onClick.AddListener(OnExitGameButtonClicked);
+    private void GetAllMenuUIs() {
+        mainMenuUI = transform.Find("MainMenuUI").gameObject;
+        settingsMenuUI = transform.Find("SettingsUI").gameObject;
         if (gameLoaded) {
-            saveGameButton = gameObject.transform.Find("SaveGameButton").gameObject;
-            saveGameButton.GetComponent<Button>().onClick.AddListener(OnSaveGameButtonClicked);
+            saveGameMenuUI = transform.Find("SaveGameUI").gameObject;
+        } else {
+            loadGameMenuUI = transform.Find("LoadGameUI").gameObject;
+        }
+    }
+
+    private void GetAllButtons() {
+        mainMenuUI.transform.Find("SettingsButton").GetComponent<Button>().onClick.AddListener(OnSettingsButtonClicked);
+        settingsMenuUI.transform.Find("ExitButton").GetComponent<Button>().onClick.AddListener(() => SaveAndExitSettings());
+        mainMenuUI.transform.Find("ExitButton").GetComponent<Button>().onClick.AddListener(() => OnExitButtonClicked());
+        if (gameLoaded) {
+            mainMenuUI.transform.Find("SaveGameButton").GetComponent<Button>().onClick.AddListener(OnSaveGameButtonClicked);
+            saveGameMenuUI.transform.Find("ExitButton").GetComponent<Button>().onClick.AddListener(() => OnBackButtonClicked(saveGameMenuUI));
         }
         else {
-            newGameButton = gameObject.transform.Find("NewGameButton").gameObject;
-            newGameButton.GetComponent<Button>().onClick.AddListener(OnNewGameButtonClicked);
-            loadGameButton = gameObject.transform.Find("LoadGameButton").gameObject;
-            loadGameButton.GetComponent<Button>().onClick.AddListener(OnLoadGameButtonClicked);
+            mainMenuUI.transform.Find("LoadGameButton").GetComponent<Button>().onClick.AddListener(OnLoadGameButtonClicked);
+            loadGameMenuUI.transform.Find("ExitButton").GetComponent<Button>().onClick.AddListener(() => OnBackButtonClicked(loadGameMenuUI));
+            mainMenuUI.transform.Find("NewGameButton").GetComponent<Button>().onClick.AddListener(OnNewGameButtonClicked);
         }
+
+    }
+
+    
+
+    private void SaveAndExitSettings() {
+        if (gameLoaded) {
+            
+        } else {
+
+        }
+        settingsMenuUI.SetActive(false);
+        mainMenuUI.SetActive(true);
     }
 
     // Update is called once per frame
@@ -65,24 +89,28 @@ public class MenuManager : MonoBehaviour
     /// Only available if not gameLoaded
     /// </summary>
     public void OnNewGameButtonClicked() {
-        Debug.Log("New Game button clicked");
-        // Add logic to start a new game
         SceneManager.LoadScene(gameSceneName);
     }
 
     public void OnLoadGameButtonClicked() {
         Debug.Log("Load Game button clicked");
         // Add logic to load a game
+        loadGameMenuUI.SetActive(true);
+        mainMenuUI.SetActive(false);
     }
     public void OnSaveGameButtonClicked() {
         Debug.Log("Save Game button clicked");
         // Add logic to save a game
+        saveGameMenuUI.SetActive(true);
+        mainMenuUI.SetActive(false);
     }
     public void OnSettingsButtonClicked() {
         Debug.Log("Settings button clicked");
         // Add logic to open settings menu
+        settingsMenuUI.SetActive(true);
+        mainMenuUI.SetActive(false);
     }
-    public void OnExitGameButtonClicked() {
+    private void OnExitButtonClicked() {
         Debug.Log("Exit Game button clicked");
         // Add logic to exit the game
         if (gameLoaded) {
@@ -93,5 +121,10 @@ public class MenuManager : MonoBehaviour
             UnityEditor.EditorApplication.isPlaying = false;
 #endif
         }
+    }
+
+    public void OnBackButtonClicked(GameObject currentMenuUI) {
+        currentMenuUI.SetActive(false);
+        mainMenuUI.SetActive(true);
     }
 }

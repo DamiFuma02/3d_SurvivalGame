@@ -26,7 +26,7 @@ public class MouseMovements : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!InventorySystem.Instance.isOpen) {
+        if (!InventorySystem.Instance.isOpen && !MenuManager.Instance.isMenuOpen) {
             // Mouse X: rotate player (left right) along Y axis 
             _mouseHorizontalMovement = Input.GetAxisRaw("Mouse X") * mouseSensitivity * Time.deltaTime;
             _xRotation -= _mouseVerticalMovement;

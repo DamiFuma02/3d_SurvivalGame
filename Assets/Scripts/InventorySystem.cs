@@ -153,12 +153,15 @@ public class InventorySystem : MonoBehaviour
             if (MenuManager.Instance.isMenuOpen) {
                 mainMenuCanvas.SetActive(false);
                 playerUICanvas.SetActive(true);
+                Cursor.lockState = CursorLockMode.Locked;
             }
             else {
+                Cursor.lockState = CursorLockMode.None;
                 mainMenuCanvas.SetActive(true);
                 playerUICanvas.SetActive(false);
             }
             MenuManager.Instance.isMenuOpen = !MenuManager.Instance.isMenuOpen;
+            Cursor.visible = MenuManager.Instance.isMenuOpen;
         }
     }
 
