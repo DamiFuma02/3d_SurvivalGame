@@ -1,0 +1,166 @@
+{
+    "playerStats": {
+        "health": 1000,
+        "food": 1000,
+        "water": 1000,
+        "position": {
+            "x": 8.103558540344239,
+            "y": 1.3299998044967652,
+            "z": 23.655691146850587
+        },
+        "rotation": {
+            "x": 0.0,
+            "y": 337.74285888671877,
+            "z": 0.0
+        },
+        "inventory": {
+            "items": [
+                {
+                    "itemName": "apple",
+                    "quantity": 1,
+                    "maxQuantityPerStack": 16,
+                    "category": 1,
+                    "categoryProperties": {
+                        "_Buckets": [
+                            0,
+                            -1,
+                            -1
+                        ],
+                        "_HashCodes": [
+                            1264461516,
+                            0,
+                            0
+                        ],
+                        "_Next": [
+                            -1,
+                            0,
+                            0
+                        ],
+                        "_Count": 1,
+                        "_Version": 5,
+                        "_FreeList": -1,
+                        "_FreeCount": 0,
+                        "_Keys": [
+                            "health",
+                            "",
+                            ""
+                        ],
+                        "_Values": [
+                            10,
+                            0,
+                            0
+                        ]
+                    },
+                    "craftingRecipe": {
+                        "_Buckets": [
+                            -1,
+                            -1,
+                            -1
+                        ],
+                        "_HashCodes": [
+                            0,
+                            0,
+                            0
+                        ],
+                        "_Next": [
+                            0,
+                            0,
+                            0
+                        ],
+                        "_Count": 0,
+                        "_Version": 0,
+                        "_FreeList": -1,
+                        "_FreeCount": 0,
+                        "_Keys": [
+                            "",
+                            "",
+                            ""
+                        ],
+                        "_Values": [
+                            0,
+                            0,
+                            0
+                        ]
+                    },
+                    "itemMaterial": 0
+                },
+                {
+                    "itemName": "stick",
+                    "quantity": 3,
+                    "maxQuantityPerStack": 16,
+                    "category": 0,
+                    "categoryProperties": {
+                        "_Buckets": [
+                            -1,
+                            -1,
+                            -1
+                        ],
+                        "_HashCodes": [
+                            0,
+                            0,
+                            0
+                        ],
+                        "_Next": [
+                            0,
+                            0,
+                            0
+                        ],
+                        "_Count": 0,
+                        "_Version": 0,
+                        "_FreeList": -1,
+                        "_FreeCount": 0,
+                        "_Keys": [
+                            "",
+                            "",
+                            ""
+                        ],
+                        "_Values": [
+                            0,
+                            0,
+                            0
+                        ]
+                    },
+                    "craftingRecipe": {
+                        "_Buckets": [
+                            -1,
+                            -1,
+                            -1
+                        ],
+                        "_HashCodes": [
+                            0,
+                            0,
+                            0
+                        ],
+                        "_Next": [
+                            0,
+                            0,
+                            0
+                        ],
+                        "_Count": 0,
+                        "_Version": 0,
+                        "_FreeList": -1,
+                        "_FreeCount": 0,
+                        "_Keys": [
+                            "",
+                            "",
+                            ""
+                        ],
+                        "_Values": [
+                            0,
+                            0,
+                            0
+                        ]
+                    },
+                    "itemMaterial": 1
+                }
+            ]
+        }
+    },
+    "gameSettings": {
+        "gameMode": 0,
+        "gameDifficulty": 0,
+        "gameVolume": 50,
+        "creaturesVolume": 50
+    },
+    "saveDateTime": "2025-06-04-19-01-32"
+}

@@ -40,6 +40,39 @@ public enum ArmorType {
     Helmet, Chestplate, Leggings, Boots
 }
 
+[Serializable]
+public class SerializableInventoryItem {
+    public string itemName;   //unique name
+    public int quantity;
+    public int maxQuantityPerStack;
+    public ItemCategory category;
+    // key: property name, value: property value (can be any type)
+    public CategoryPropertiesDictionary categoryProperties = new CategoryPropertiesDictionary();
+    // key: item name, value: item quantity required for crafting
+    public CraftingRecipeDictionary craftingRecipe = new CraftingRecipeDictionary();
+    public ItemMaterial itemMaterial = ItemMaterial.NoMaterial; // default material
+    public SerializableInventoryItem(InventoryItem item) {
+        itemName = item.itemName;
+        quantity = item.quantity;
+        maxQuantityPerStack = item.maxQuantityPerStack;
+        category = item.category;
+        categoryProperties = item.categoryProperties;
+        craftingRecipe = item.craftingRecipe;
+        itemMaterial = item.itemMaterial;
+    }
+
+    public InventoryItem ToInventoryItem() {
+        InventoryItem item = new InventoryItem();
+        item.itemName = itemName;
+        item.quantity = quantity;
+        item.maxQuantityPerStack = maxQuantityPerStack;
+        item.category = category;
+        item.categoryProperties = categoryProperties;
+        item.craftingRecipe = craftingRecipe;
+        item.itemMaterial = itemMaterial;
+        return item;
+    }
+}
 
 
 public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler {

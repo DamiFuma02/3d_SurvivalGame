@@ -1,17 +1,68 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
+using Palmmedia.ReportGenerator.Core.Common;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 
+[Serializable]
+public class SerializableVector3 {
+    public float x;
+    public float y;
+    public float z;
+    public SerializableVector3(Vector3 vector) {
+        x = vector.x;
+        y = vector.y;
+        z = vector.z;
+    }
+    public Vector3 ToVector3() {
+        return new Vector3(x, y, z);
+    }
+}
+
+[Serializable]
+public class SerializableInventoryList {
+    public List<SerializableInventoryItem> items = new List<SerializableInventoryItem>();
+    public SerializableInventoryList(List<InventoryItem> inventoryItems) {
+        foreach (InventoryItem item in inventoryItems) {
+            if (item != null) {
+                items.Add(new SerializableInventoryItem(item));
+            }
+        }
+    }
+    public List<InventoryItem> ToInventoryList() {
+        List<InventoryItem> inventoryItems = new List<InventoryItem>();
+        foreach (var item in items) {
+            inventoryItems.Add(item.ToInventoryItem());
+        }
+        return inventoryItems;
+    }
+}
 
 [Serializable] public class PlayerStats {
     public int health = 100;
     public int food = 50;
     public int water = 0;
+    public SerializableVector3 position = new SerializableVector3(Vector3.zero); // Player's position in the game world
+    public SerializableVector3 rotation = new SerializableVector3(Vector3.zero); // Player's rotation in the game world
+    public SerializableInventoryList inventory = new SerializableInventoryList(new List<InventoryItem>()); // Player's inventory items
+
+    public PlayerStats() { }
+    public PlayerStats(int health, int food, int water, SerializableVector3 position, SerializableVector3 rotation, SerializableInventoryList inventory) {
+        this.health = health;
+        this.food = food;
+        this.water = water;
+        this.position = position;
+        this.rotation = rotation;
+        this.inventory = inventory;
+    }
 }
 
 //[Serializable] public class PlayerInventory {
@@ -20,9 +71,17 @@ using UnityEngine.UI;
 //[Serializable] InventoryItem  {"itemName", "quantity", "category", ... (other values ???)}
 
 [Serializable] public class GameSettings {
-    public bool survivalMode = true;
+    public int gameMode = (int)GameMode.Survival;
+    public int gameDifficulty = (int)GameDifficulty.Hard;
     public int gameVolume = 50; // 0-100
     public int creaturesVolume = 50; // 0-100
+    public GameSettings() { }
+    public GameSettings(int gameMode,int gameDifficulty, int gameVolume, int creaturesVolume) {
+        this.gameMode = gameMode;
+        this.gameDifficulty = gameDifficulty;
+        this.gameVolume = gameVolume;
+        this.creaturesVolume = creaturesVolume;
+    }
 }
 
 [Serializable] public class GameSaveData {
@@ -30,6 +89,12 @@ using UnityEngine.UI;
     //public PlayerInventory playerInventory = new PlayerInventory();
     public GameSettings gameSettings = new GameSettings();
     public string saveDateTime; // for saving the date and time of the save
+
+    public GameSaveData(PlayerStats playerStats, GameSettings gameSettings, string saveDateTime) {
+        this.playerStats = playerStats;
+        this.gameSettings = gameSettings;
+        this.saveDateTime = saveDateTime;
+    }
 }
 
 
@@ -78,6 +143,8 @@ public class MenuManager : MonoBehaviour
     private string gameSceneName = "SampleScene";
     public bool isMenuOpen = false;
     private string menuManager2DIconsPath = "2D_Prefabs/MenuManager/";
+    //private int saveCount = 0;
+    private string saveGameDirectory = "./SaveDataDirectory";
 
     // Start is called before the first frame update
     void Start()
@@ -88,20 +155,24 @@ public class MenuManager : MonoBehaviour
     }
 
     private void GetAllMenuUIs() {
-        mainMenuUI = transform.Find("MainMenuUI").gameObject;
-        settingsMenuUI = transform.GetChild(2).gameObject;
+        mainMenuUI = transform.GetChild(0).gameObject;
+        settingsMenuUI = transform.GetChild(1).gameObject;
         if (gameLoaded) {
-            volumeGameObjects["MainVolume"] = settingsMenuUI.transform.GetChild(1).GetChild(1).gameObject;
+            // save game menu 
+            saveGameMenuUI = transform.GetChild(2).gameObject;
+            // load volume components
+            volumeGameObjects["MainVolume"] = settingsMenuUI.transform.GetChild(2).GetChild(1).gameObject;
             volumeGameObjects["MainVolume"].transform.GetChild(1).GetComponent<Slider>().onValueChanged.AddListener((value) => SetVolume(value, "MainVolume"));
-            volumeGameObjects["CreatureVolume"] = settingsMenuUI.transform.GetChild(1).GetChild(2).gameObject;
+            volumeGameObjects["CreatureVolume"] = settingsMenuUI.transform.GetChild(2).GetChild(2).gameObject;
             volumeGameObjects["CreatureVolume"].transform.GetChild(1).GetComponent<Slider>().onValueChanged.AddListener((value) => SetVolume(value, "CreatureVolume"));
-            saveGameMenuUI = transform.GetChild(1).gameObject;
         } else {
-            gameModeSliderUI = settingsMenuUI.transform.GetChild(1).GetChild(1).GetChild(1).gameObject;
+            // load game menu
+            loadGameMenuUI = transform.GetChild(2).gameObject;
+            // difficulty info
+            gameModeSliderUI = settingsMenuUI.transform.GetChild(2).GetChild(1).GetChild(1).gameObject;
             gameModeSliderUI.GetComponent<Slider>().onValueChanged.AddListener((value) => SetGameMode(value));
-            difficultySliderUI = settingsMenuUI.transform.GetChild(1).GetChild(2).GetChild(1).gameObject;
+            difficultySliderUI = settingsMenuUI.transform.GetChild(2).GetChild(2).GetChild(1).gameObject;
             difficultySliderUI.GetComponent<Slider>().onValueChanged.AddListener((value) => SetGameDifficulty(value));
-            loadGameMenuUI = transform.GetChild(1).gameObject;
         }
     }
 
@@ -114,17 +185,17 @@ public class MenuManager : MonoBehaviour
 
 
     private void GetAllButtons() {
-        mainMenuUI.transform.Find("SettingsButton").GetComponent<Button>().onClick.AddListener(OnSettingsButtonClicked);
-        settingsMenuUI.transform.Find("ExitButton").GetComponent<Button>().onClick.AddListener(() => SaveAndExitSettings());
-        mainMenuUI.transform.Find("ExitButton").GetComponent<Button>().onClick.AddListener(() => OnExitButtonClicked());
+        mainMenuUI.transform.GetChild(0).GetComponent<Button>().onClick.AddListener(OnSettingsButtonClicked);
+        mainMenuUI.transform.GetChild(1).GetComponent<Button>().onClick.AddListener(() => OnExitButtonClicked());
+        settingsMenuUI.transform.GetChild(1).GetComponent<Button>().onClick.AddListener(() => SaveAndExitSettings());
         if (gameLoaded) {
-            mainMenuUI.transform.Find("SaveGameButton").GetComponent<Button>().onClick.AddListener(OnSaveGameButtonClicked);
-            saveGameMenuUI.transform.Find("ExitButton").GetComponent<Button>().onClick.AddListener(() => OnBackButtonClicked(saveGameMenuUI));
+            mainMenuUI.transform.GetChild(2).GetComponent<Button>().onClick.AddListener(OnSaveGameButtonClicked);
+            saveGameMenuUI.transform.GetChild(0).GetComponent<Button>().onClick.AddListener(() => OnBackButtonClicked(saveGameMenuUI));
         }
         else {
-            mainMenuUI.transform.Find("LoadGameButton").GetComponent<Button>().onClick.AddListener(OnLoadGameButtonClicked);
-            loadGameMenuUI.transform.Find("ExitButton").GetComponent<Button>().onClick.AddListener(() => OnBackButtonClicked(loadGameMenuUI));
-            mainMenuUI.transform.Find("NewGameButton").GetComponent<Button>().onClick.AddListener(OnNewGameButtonClicked);
+            mainMenuUI.transform.GetChild(2).GetComponent<Button>().onClick.AddListener(OnNewGameButtonClicked);
+            mainMenuUI.transform.GetChild(3).GetComponent<Button>().onClick.AddListener(OnLoadGameButtonClicked);
+            loadGameMenuUI.transform.GetChild(1).GetComponent<Button>().onClick.AddListener(() => OnBackButtonClicked(loadGameMenuUI));
         }
     }
 
@@ -170,16 +241,164 @@ public class MenuManager : MonoBehaviour
         // Add logic to load a game
         loadGameMenuUI.SetActive(true);
         mainMenuUI.SetActive(false);
+        if (Directory.Exists(Path.Combine(saveGameDirectory, ""))) {
+            string[] jsonFiles = Directory.GetFiles(Path.Combine(saveGameDirectory, ""), "*.json");
+            CreateLoadGameComponents(jsonFiles);
+        }
     }
+
+    private void CreateLoadGameComponents(string[] jsonFiles) {
+        List<string> fileNames = new List<string>();
+        foreach (string file in jsonFiles) { 
+            fileNames.Add(Path.GetFileNameWithoutExtension(file)); // Extracts only the file name "yyyy-mm-dd-hh-mm-ss"
+        }
+        if (fileNames.Count == 0) {
+            return;
+        }
+        int maxWidth = 1800;
+        int maxHeight = 700;
+        int boxSize = 500;  // width = height
+        int numberOfSaves = fileNames.Count;
+        int maxColumns = 5;
+        int maxRows = Mathf.Min(2, Mathf.CeilToInt((float)numberOfSaves / maxColumns));
+
+        float spacingX = (float)maxWidth / maxColumns;
+        float spacingY = (float)maxHeight / maxRows;
+
+        float scaleFactorX = spacingX / boxSize;
+        float scaleFactorY = spacingY / boxSize;
+        float scaleFactor = Mathf.Min(scaleFactorX, scaleFactorY); // Maintain aspect ratio
+
+        for (int i = 0; i < numberOfSaves; i++) {
+            int row = i / maxColumns;
+            int col = i % maxColumns;
+            // Calculate total width occupied by slots
+            float totalWidth = Mathf.Min(numberOfSaves, maxColumns) * spacingX;
+
+            // Offset to center horizontally
+            float offsetX = totalWidth / 2;
+
+            float posX = col * spacingX + spacingX / 2 - offsetX;
+            float posY = -row * spacingY - spacingY / 2 + maxHeight / 2;
+
+            GameObject slot = Instantiate(Resources.Load<GameObject>(Path.Combine(menuManager2DIconsPath, "GameSlotUI")), loadGameMenuUI.transform.GetChild(2).transform);
+            slot.transform.localScale = new Vector3(scaleFactor, scaleFactor, 1); // Scale down while keeping aspect ratio
+            slot.transform.localPosition = new Vector3(posX, posY, 0); // Position the slot in the grid
+            UpdateSaveSlotUI(slot, i, jsonFiles[i]);
+        }
+
+    }
+
+    private void UpdateSaveSlotUI(GameObject slot, int fileIdx, string filePath) {
+        GameSaveData gameSaveData = LoadGameFromJson(filePath);
+        GameObject dateTimeInfoUI = slot.transform.GetChild(0).gameObject;
+        dateTimeInfoUI.GetComponentInChildren<TextMeshProUGUI>().text = gameSaveData.saveDateTime;
+        GameObject gameModeInfoUI = slot.transform.GetChild(1).gameObject;
+        GameMode currGameMode = (GameMode) gameSaveData.gameSettings.gameMode;
+        gameModeInfoUI.transform.GetComponentInChildren<Image>().overrideSprite = Resources.Load<Sprite>(Path.Combine(menuManager2DIconsPath, currGameMode.ToString()));
+        gameModeInfoUI.transform.GetComponentInChildren<TextMeshProUGUI>().text = currGameMode.ToString();
+        GameObject difficultyInfoUI = slot.transform.GetChild(2).gameObject;
+        GameDifficulty currDiff = (GameDifficulty)gameSaveData.gameSettings.gameDifficulty;
+        difficultyInfoUI.GetComponentInChildren<Image>().overrideSprite = Resources.Load<Sprite>(Path.Combine(menuManager2DIconsPath, currDiff.ToString()));
+        difficultyInfoUI.GetComponentInChildren<TextMeshProUGUI>().text = currDiff.ToString();
+        GameObject loadCurrentSaveData = slot.transform.GetChild(3).gameObject;
+        loadCurrentSaveData.GetComponent<Button>().onClick.AddListener(() => LoadGameViaSaveData(gameSaveData));
+    }
+
+    private void LoadGameViaSaveData(GameSaveData gameSaveData) {
+        Debug.Log("Loading save..");
+        Debug.Log(JsonUtility.ToJson(gameSaveData));
+    }
+
     public void OnSaveGameButtonClicked() {
         Debug.Log("Save Game button clicked");
         // Add logic to save a game
         saveGameMenuUI.SetActive(true);
         mainMenuUI.SetActive(false);
         // Create a SaveGameData object and populate it with the current game state
-        GameSaveData saveData = new GameSaveData();
-        saveData.saveDateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+        GameSaveData gameSaveData = GenerateGameSaveData();
+        string fileName = $"{gameSaveData.saveDateTime}";
+        string path = Path.Combine(saveGameDirectory, fileName);
+        //saveCount++;
+        SaveGameDataInJson(gameSaveData, path);
+        SaveGameDataInBinary(gameSaveData, path);
     }
+
+    GameSaveData GenerateGameSaveData() {
+        PlayerDynamicBarsSystem playerData = PlayerDynamicBarsSystem.Instance;
+        PlayerStats playerStats = new PlayerStats(
+            playerData.playerCurrValues[BarType.Health],
+            playerData.playerCurrValues[BarType.Food],
+            playerData.playerCurrValues[BarType.Water],
+            new SerializableVector3(playerData.transform.position),
+            new SerializableVector3(playerData.transform.rotation.eulerAngles),
+            new SerializableInventoryList(InventorySystem.Instance.inventoryItems.ToList())
+        );
+        GameSettings gameSettings = new GameSettings(
+            (int)gameMode,
+            (int)gameDifficulty,
+            volumeDictionary["MainVolume"],
+            volumeDictionary["CreatureVolume"]
+        );
+        GameSaveData saveData = new GameSaveData(
+            playerStats,
+            gameSettings,
+            DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss")
+        );
+        return saveData;
+    }
+
+
+
+    void SaveGameDataInBinary(GameSaveData gameSaveData, string path) {
+        // Implement the logic to save the game data in binary format
+        // This could involve serializing the GameSaveData object and writing it to a file
+        Debug.Log("Game data saved in binary format.");
+        BinaryFormatter binaryFormatter = new BinaryFormatter();
+        if (!Directory.Exists(saveGameDirectory)) {
+            Directory.CreateDirectory(saveGameDirectory);
+        }
+        FileStream stream = new FileStream(path + ".bin", FileMode.Create);
+        binaryFormatter.Serialize(stream, gameSaveData);
+        stream.Close();
+        Debug.Log($"Saved data in {path}.bin");
+    }
+
+
+    void SaveGameDataInJson(GameSaveData gameSaveData, string path) {
+        // Implement the logic to save the game data in binary format
+        // This could involve serializing the GameSaveData object and writing it to a file
+        Debug.Log("Game data saved in binary format.");
+        string jsonString = JsonUtility.ToJson(gameSaveData, true);
+        Debug.Log("Serialized JSON:\n" + jsonString);
+        File.WriteAllText(path+".json", jsonString);
+        //GameSaveData readTest = JsonUtility.FromJson<GameSaveData>(jsonString);
+        //Debug.Log("Read Successfull");
+    }
+
+
+    GameSaveData LoadGameDataFromBinary(string path) {
+        // Implement the logic to load the game data from a binary file
+        // This could involve deserializing the GameSaveData object from a file
+        Debug.Log("Game data loaded from binary format.");
+        if (File.Exists(path)) {
+            BinaryFormatter binaryFormatter = new BinaryFormatter();
+            FileStream stream = new FileStream(path, FileMode.Open);
+            GameSaveData gameSaveData = binaryFormatter.Deserialize(stream) as GameSaveData;
+            stream.Close();
+            return gameSaveData;
+        }
+        return null;
+    }
+
+    GameSaveData LoadGameFromJson(string directoryPath) {
+        string jsonContent = File.ReadAllText(directoryPath);
+        return JsonUtility.FromJson<GameSaveData>(jsonContent);
+    }
+
+    
+    
+    
     public void OnSettingsButtonClicked() {
         Debug.Log("Settings button clicked");
         // Add logic to open settings menu
