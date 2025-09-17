@@ -47,18 +47,18 @@ public class SerializableInventoryList {
 }
 
 [Serializable] public class PlayerStats {
-    public int health = 100;
-    public int food = 50;
-    public int water = 0;
+    public Dictionary<BarType, int> playerBarValues = new Dictionary<BarType, int> {
+        { BarType.Health, 1000 },
+        { BarType.Food, 1000 },
+        { BarType.Water, 1000 }
+    };
     public SerializableVector3 position = new SerializableVector3(Vector3.zero); // Player's position in the game world
     public SerializableVector3 rotation = new SerializableVector3(Vector3.zero); // Player's rotation in the game world
     public SerializableInventoryList inventory = new SerializableInventoryList(new List<InventoryItem>()); // Player's inventory items
 
     public PlayerStats() { }
-    public PlayerStats(int health, int food, int water, SerializableVector3 position, SerializableVector3 rotation, SerializableInventoryList inventory) {
-        this.health = health;
-        this.food = food;
-        this.water = water;
+    public PlayerStats(Dictionary<BarType, int> playerBarVals, SerializableVector3 position, SerializableVector3 rotation, SerializableInventoryList inventory) {
+        this.playerBarValues = playerBarVals;
         this.position = position;
         this.rotation = rotation;
         this.inventory = inventory;
@@ -73,14 +73,15 @@ public class SerializableInventoryList {
 [Serializable] public class GameSettings {
     public int gameMode = (int)GameMode.Survival;
     public int gameDifficulty = (int)GameDifficulty.Hard;
-    public int gameVolume = 50; // 0-100
-    public int creaturesVolume = 50; // 0-100
+    public Dictionary<string, int> volumeDictionary = new Dictionary<string, int> {
+        { "MainVolume", 50 }, // 0-100
+        { "CreatureVolume", 50 } // 0-100
+    };
     public GameSettings() { }
-    public GameSettings(int gameMode,int gameDifficulty, int gameVolume, int creaturesVolume) {
+    public GameSettings(int gameMode,int gameDifficulty, Dictionary<string, int> volumeDictionary) {
         this.gameMode = gameMode;
         this.gameDifficulty = gameDifficulty;
-        this.gameVolume = gameVolume;
-        this.creaturesVolume = creaturesVolume;
+        this.volumeDictionary = volumeDictionary;
     }
 }
 
@@ -105,6 +106,7 @@ public enum GameDifficulty { Easy, Normal, Hard }
 
 public class MenuManager : MonoBehaviour
 {
+    #region Singleton Instance
     public static MenuManager Instance { get; set; }
 
     private void Awake() {
@@ -116,7 +118,8 @@ public class MenuManager : MonoBehaviour
         }
     }
 
-    
+    #endregion
+
     // common components
     private GameObject mainMenuUI;
     private GameObject settingsMenuUI;
@@ -146,10 +149,19 @@ public class MenuManager : MonoBehaviour
     //private int saveCount = 0;
     private string saveGameDirectory = "./SaveDataDirectory";
 
+    public GameSaveData currGameSaveData;
+
+
+    #region Load UI Components
+
+
     // Start is called before the first frame update
     void Start()
     {
         gameLoaded = SceneManager.GetActiveScene().name == gameSceneName;
+        if (!gameLoaded) {
+            currGameSaveData = null;
+        }   
         GetAllMenuUIs();
         GetAllButtons();
     }
@@ -176,13 +188,6 @@ public class MenuManager : MonoBehaviour
         }
     }
 
-    void SetVolume(float value,string volumeKey) {
-        volumeDictionary[volumeKey] = Mathf.RoundToInt(value * 100);
-        string currVolumeIconName = volumeDictionary[volumeKey] == 0 ? "mute_icon" : volumeDictionary[volumeKey] <= 50 ? "lowvolume_icon" : "highvolume_icon";
-        volumeGameObjects[volumeKey].transform.GetChild(0).gameObject.GetComponent<Image>().overrideSprite = Resources.Load<Sprite>(menuManager2DIconsPath + currVolumeIconName);
-    }
-
-
 
     private void GetAllButtons() {
         mainMenuUI.transform.GetChild(0).GetComponent<Button>().onClick.AddListener(OnSettingsButtonClicked);
@@ -199,11 +204,22 @@ public class MenuManager : MonoBehaviour
         }
     }
 
-    
 
+    // Update is called once per frame
+    void Update() {
 
+    }
+
+    #endregion
+
+    #region Setters for Game Settings
     void SetGameDifficulty(float value) {
         gameDifficulty = (GameDifficulty)Mathf.RoundToInt(value);
+    }
+    void SetVolume(float value, string volumeKey) {
+        volumeDictionary[volumeKey] = Mathf.RoundToInt(value * 100);
+        string currVolumeIconName = volumeDictionary[volumeKey] == 0 ? "mute_icon" : volumeDictionary[volumeKey] <= 50 ? "lowvolume_icon" : "highvolume_icon";
+        volumeGameObjects[volumeKey].transform.GetChild(0).gameObject.GetComponent<Image>().overrideSprite = Resources.Load<Sprite>(menuManager2DIconsPath + currVolumeIconName);
     }
 
 
@@ -213,21 +229,10 @@ public class MenuManager : MonoBehaviour
         gameModeSliderUI.transform.Find("Text").GetComponent<TextMeshProUGUI>().text = gameMode.ToString();
     }
 
-    private void SaveAndExitSettings() {
-        if (gameLoaded) {
-            
-        } else {
+    #endregion
 
-        }
-        settingsMenuUI.SetActive(false);
-        mainMenuUI.SetActive(true);
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+
 
     /// <summary>
     /// Only available if not gameLoaded
@@ -236,6 +241,7 @@ public class MenuManager : MonoBehaviour
         SceneManager.LoadScene(gameSceneName);
     }
 
+    #region Load Game Functionality
     public void OnLoadGameButtonClicked() {
         Debug.Log("Load Game button clicked");
         // Add logic to load a game
@@ -308,7 +314,36 @@ public class MenuManager : MonoBehaviour
     private void LoadGameViaSaveData(GameSaveData gameSaveData) {
         Debug.Log("Loading save..");
         Debug.Log(JsonUtility.ToJson(gameSaveData));
+        currGameSaveData = gameSaveData;
+        gameMode = (GameMode)gameSaveData.gameSettings.gameMode;
+        gameDifficulty = (GameDifficulty)gameSaveData.gameSettings.gameDifficulty;
+        volumeDictionary = gameSaveData.gameSettings.volumeDictionary;
+        SceneManager.LoadScene(gameSceneName, LoadSceneMode.Single);
     }
+
+    GameSaveData LoadGameDataFromBinary(string path) {
+        // Implement the logic to load the game data from a binary file
+        // This could involve deserializing the GameSaveData object from a file
+        Debug.Log("Game data loaded from binary format.");
+        if (File.Exists(path)) {
+            BinaryFormatter binaryFormatter = new BinaryFormatter();
+            FileStream stream = new FileStream(path, FileMode.Open);
+            GameSaveData gameSaveData = binaryFormatter.Deserialize(stream) as GameSaveData;
+            stream.Close();
+            return gameSaveData;
+        }
+        return null;
+    }
+
+    GameSaveData LoadGameFromJson(string directoryPath) {
+        string jsonContent = File.ReadAllText(directoryPath);
+        return JsonUtility.FromJson<GameSaveData>(jsonContent);
+    }
+
+    #endregion
+
+
+    #region Save Game Functionality
 
     public void OnSaveGameButtonClicked() {
         Debug.Log("Save Game button clicked");
@@ -327,9 +362,7 @@ public class MenuManager : MonoBehaviour
     GameSaveData GenerateGameSaveData() {
         PlayerDynamicBarsSystem playerData = PlayerDynamicBarsSystem.Instance;
         PlayerStats playerStats = new PlayerStats(
-            playerData.playerCurrValues[BarType.Health],
-            playerData.playerCurrValues[BarType.Food],
-            playerData.playerCurrValues[BarType.Water],
+            playerData.playerCurrValues ,
             new SerializableVector3(playerData.transform.position),
             new SerializableVector3(playerData.transform.rotation.eulerAngles),
             new SerializableInventoryList(InventorySystem.Instance.inventoryItems.ToList())
@@ -337,8 +370,7 @@ public class MenuManager : MonoBehaviour
         GameSettings gameSettings = new GameSettings(
             (int)gameMode,
             (int)gameDifficulty,
-            volumeDictionary["MainVolume"],
-            volumeDictionary["CreatureVolume"]
+            volumeDictionary
         );
         GameSaveData saveData = new GameSaveData(
             playerStats,
@@ -376,29 +408,11 @@ public class MenuManager : MonoBehaviour
         //Debug.Log("Read Successfull");
     }
 
+    #endregion
 
-    GameSaveData LoadGameDataFromBinary(string path) {
-        // Implement the logic to load the game data from a binary file
-        // This could involve deserializing the GameSaveData object from a file
-        Debug.Log("Game data loaded from binary format.");
-        if (File.Exists(path)) {
-            BinaryFormatter binaryFormatter = new BinaryFormatter();
-            FileStream stream = new FileStream(path, FileMode.Open);
-            GameSaveData gameSaveData = binaryFormatter.Deserialize(stream) as GameSaveData;
-            stream.Close();
-            return gameSaveData;
-        }
-        return null;
-    }
 
-    GameSaveData LoadGameFromJson(string directoryPath) {
-        string jsonContent = File.ReadAllText(directoryPath);
-        return JsonUtility.FromJson<GameSaveData>(jsonContent);
-    }
 
-    
-    
-    
+    #region Settings and Exit Buttons
     public void OnSettingsButtonClicked() {
         Debug.Log("Settings button clicked");
         // Add logic to open settings menu
@@ -409,7 +423,7 @@ public class MenuManager : MonoBehaviour
         Debug.Log("Exit Game button clicked");
         // Add logic to exit the game
         if (gameLoaded) {
-            SceneManager.LoadScene(mainMenuSceneName);
+            SceneManager.LoadScene(mainMenuSceneName, LoadSceneMode.Single);
         } else {
             Application.Quit();
 #if UNITY_EDITOR
@@ -422,4 +436,17 @@ public class MenuManager : MonoBehaviour
         currentMenuUI.SetActive(false);
         mainMenuUI.SetActive(true);
     }
+
+    private void SaveAndExitSettings() {
+        if (gameLoaded) {
+
+        }
+        else {
+
+        }
+        settingsMenuUI.SetActive(false);
+        mainMenuUI.SetActive(true);
+    }
+    #endregion
+
 }

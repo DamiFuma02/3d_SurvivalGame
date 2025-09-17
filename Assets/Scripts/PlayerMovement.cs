@@ -30,6 +30,7 @@ public class PlayerMovement : MonoBehaviour
         }
         else {
             instance = this;
+            DontDestroyOnLoad(gameObject);
         }
     }
 
@@ -71,5 +72,13 @@ public class PlayerMovement : MonoBehaviour
         characterController.Move(velocityVector*Time.deltaTime);
         yield return new WaitForSeconds(2f);
         
+    }
+
+    public void SetPlayerPosition(Vector3 newPosition) {
+        transform.localPosition = newPosition;
+    }
+
+    public void SetPlayerRotation(Vector3 newRotation) {
+        transform.eulerAngles = newRotation;
     }
 }

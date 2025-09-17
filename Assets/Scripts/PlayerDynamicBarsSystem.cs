@@ -90,9 +90,30 @@ public class PlayerDynamicBarsSystem : MonoBehaviour
     
 
     public void ConsumeItem(InventoryItem inventoryItem) {
-        if (inventoryItem.categoryProperties == null && inventoryItem.categoryProperties.Count == 0) {
-            return;
+        // inventoryItem.category == ItemCategory.Consumable
+        BarType parsedBarType;
+        foreach (KeyValuePair<string, int> item in inventoryItem.categoryProperties) {
+            if (Enum.TryParse<BarType>(item.Key,true, out parsedBarType)) {
+                switch (parsedBarType) {
+                    case BarType.Health:
+                        playerCurrValues[BarType.Health] = Math.Min(playerCurrValues[BarType.Health] + item.Value, playerMaxValues[BarType.Health]);
+                        break;
+                    case BarType.Food:
+                        playerCurrValues[BarType.Food] = Math.Min(playerCurrValues[BarType.Food] + item.Value, playerMaxValues[BarType.Food]);
+                        break;
+                    case BarType.Water:
+                        playerCurrValues[BarType.Water] = Math.Min(playerCurrValues[BarType.Water] + item.Value, playerMaxValues[BarType.Water]);
+                        break;
+                    default:
+                        Console.WriteLine($"Error: '{item.Key}' is not a valid BarType.");
+                        return;
+                }
+            } else {
+                Console.WriteLine($"Error: '{item.Key}' is not a valid BarType.");
+                return;
+            }
         }
+
     }
 
 
@@ -136,5 +157,9 @@ public class PlayerDynamicBarsSystem : MonoBehaviour
                 }
             }
         }
+    }
+
+    public  void SetPlayerCurrentValues(Dictionary<BarType, int> playerBarValues) {
+        playerCurrValues = playerBarValues;
     }
 }

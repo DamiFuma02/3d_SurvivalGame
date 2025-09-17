@@ -706,6 +706,22 @@ MonoBehaviour:
   gameMode: 0
   gameDifficulty: 0
   isMenuOpen: 0
+  currGameSaveData:
+    playerStats:
+      position:
+        x: 0
+        y: 0
+        z: 0
+      rotation:
+        x: 0
+        y: 0
+        z: 0
+      inventory:
+        items: []
+    gameSettings:
+      gameMode: 0
+      gameDifficulty: 2
+    saveDateTime: 
 --- !u!114 &109467790
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6582,7 +6598,7 @@ RectTransform:
   m_Father: {fileID: 635510108}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: -3}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -9107,6 +9123,7 @@ MonoBehaviour:
   isFull: 0
   equippedItemFlag: 0
   equippedPlayerBarIdx: 0
+  isMenuOpen: 0
 --- !u!4 &1522317592
 Transform:
   m_ObjectHideFlags: 0
@@ -9609,7 +9626,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1729813391
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9740,7 +9757,7 @@ RectTransform:
   m_Father: {fileID: 1184912434}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: -3}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -10144,7 +10161,7 @@ RectTransform:
   m_Father: {fileID: 1915555152}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: -3}
   m_Pivot: {x: 0.5, y: 0.5}

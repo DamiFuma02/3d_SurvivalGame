@@ -81,9 +81,9 @@ public class InventoryItem : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     public int maxQuantityPerStack;
     public ItemCategory category;
     // key: property name, value: property value (can be any type)
-    public CategoryPropertiesDictionary categoryProperties = new CategoryPropertiesDictionary();
+    public CategoryPropertiesDictionary categoryProperties ;
     // key: item name, value: item quantity required for crafting
-    public CraftingRecipeDictionary craftingRecipe = new CraftingRecipeDictionary();
+    public CraftingRecipeDictionary craftingRecipe ;
     public ItemMaterial itemMaterial = ItemMaterial.NoMaterial; // default material
 
 
