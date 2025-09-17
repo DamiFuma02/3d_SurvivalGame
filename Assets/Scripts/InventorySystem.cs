@@ -49,6 +49,7 @@ public class InventorySystem : MonoBehaviour
     private Transform firstPersonCamera;
     private Transform equippedItemUI;
     private System.Random random;
+    public bool isMenuOpen = false;
 
     private void Awake() {
         if (Instance != null && Instance != this) {
@@ -67,6 +68,18 @@ public class InventorySystem : MonoBehaviour
         isOpen = false;
         Cursor.visible = false;
         ConfigInventorySlots(GetGridSize(inventorySize));
+        CheckSaveData();
+    }
+
+    private void CheckSaveData() {
+        GameSaveData gameSaveData = MenuManager.Instance.currGameSaveData;
+        if (gameSaveData == null) {
+            return; 
+        }
+        PlayerDynamicBarsSystem.Instance.SetPlayerCurrentValues(gameSaveData.playerStats.playerBarValues);
+        PlayerMovement.instance.SetPlayerPosition(gameSaveData.playerStats.position.ToVector3());
+        PlayerMovement.instance.SetPlayerRotation(gameSaveData.playerStats.rotation.ToVector3());
+        SetInventoryItems(gameSaveData.playerStats.inventory.ToInventoryList());
     }
 
     private int[] GetGridSize(int inventoryDimension) {
@@ -150,7 +163,7 @@ public class InventorySystem : MonoBehaviour
 
     private void ToggleGameMenuOpen() {
         if (Input.GetKeyDown(KeyCode.M) || Input.GetKeyDown(KeyCode.Escape)) {
-            if (MenuManager.Instance.isMenuOpen) {
+            if (isMenuOpen) {
                 mainMenuCanvas.SetActive(false);
                 playerUICanvas.SetActive(true);
                 Cursor.lockState = CursorLockMode.Locked;
@@ -160,8 +173,8 @@ public class InventorySystem : MonoBehaviour
                 mainMenuCanvas.SetActive(true);
                 playerUICanvas.SetActive(false);
             }
-            MenuManager.Instance.isMenuOpen = !MenuManager.Instance.isMenuOpen;
-            Cursor.visible = MenuManager.Instance.isMenuOpen;
+            isMenuOpen = !isMenuOpen;
+            Cursor.visible = isMenuOpen;
         }
     }
 
@@ -184,7 +197,7 @@ public class InventorySystem : MonoBehaviour
                 // consume 1 item and 
                 PlayerDynamicBarsSystem.Instance.ConsumeItem(inventoryItems[equippedPlayerBarIdx]);
                 RemoveFromInventory(inventoryItems[equippedPlayerBarIdx].itemName, 1);
-                if (inventoryItems[equippedPlayerBarIdx] == null) {
+                if (equippedPlayerBarIdx < 0 || inventoryItems[equippedPlayerBarIdx] == null) {
                     Destroy(equippedItemUI.transform.GetChild(0).gameObject);
                     equippedItemFlag = false;
                     equippedPlayerBarIdx = -1;
@@ -326,12 +339,13 @@ public class InventorySystem : MonoBehaviour
 
     /// <summary>
     /// Can be called by InteractableObject.cs to add an item to the inventory
-    /// or by the CraftingSystem to add a crafted item
+    /// by the CraftingSystem to add a crafted item
+    /// and by the MenuManager when loading a game with saved inventory items.
     /// </summary>
     /// <param name="itemName"></param>
     /// <param name="itemCategory"></param>
     /// <param name="itemQuantity"></param>
-    public void AddToInventory(string itemName,ItemCategory itemCategory=ItemCategory.CraftingItem, int itemQuantity=1) {
+    public void AddToInventory(string itemName,ItemCategory itemCategory=ItemCategory.CraftingItem, int itemQuantity=1, CategoryPropertiesDictionary keyValuePairs = null) {
         bool itemFoundInInventory = CheckIfItemInInventory(itemName);
         int validIdx = GetFirstInsertionValidIndex(itemName, itemFoundInInventory);
         if (validIdx == -1) { // no valid index found so the inventory is full
@@ -349,6 +363,9 @@ public class InventorySystem : MonoBehaviour
                 // recursively add the item to the inventory
                 AddToInventory(itemName, itemCategory, diff);
             }
+            if (keyValuePairs != null) {
+                currItem.categoryProperties = keyValuePairs;
+            }   
             inventoryItems[validIdx] = currItem;
         }
         else {  // first time adding the item to this inventory slot
@@ -360,6 +377,9 @@ public class InventorySystem : MonoBehaviour
             itemToAdd.GetComponent<InventoryItem>().quantity = itemQuantity;
             itemToAdd.GetComponent<InventoryItem>().category = itemCategory;
             itemToAdd.transform.SetParent(chosenSlot.transform);
+            if (keyValuePairs != null) {
+                itemToAdd.GetComponent<InventoryItem>().categoryProperties = keyValuePairs;
+            }
             inventoryItems[validIdx] = itemToAdd.GetComponent<InventoryItem>();
         }
         
@@ -528,5 +548,15 @@ public class InventorySystem : MonoBehaviour
             }
         }
         yield return new WaitUntil(() => equippedItemUI.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("equippedItem_idle"));
+    }
+
+    public  void SetInventoryItems(List<InventoryItem> inventoryItems) {
+        foreach (var item in inventoryItems) {
+            AddToInventory(item);
+        }
+    }
+
+    private void AddToInventory(InventoryItem item) {
+        AddToInventory(item.itemName, item.category, item.quantity, item.categoryProperties );
     }
 }
